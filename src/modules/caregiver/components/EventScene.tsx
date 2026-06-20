@@ -160,7 +160,7 @@ export function EventScene({
       : 0;
     const autoRecordV2 = buildAutoRecordV2(event, selectedInterventionId, recordedClueIds, snapshot);
     return (
-      <div className={`caregiver-scene-root ${styles.eventRoot}`} style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <div className={`caregiver-scene-root ${styles.eventRoot}`} style={{ alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
         <EventRecordPanel
           autoRecordV2={autoRecordV2}
           elderName={event.elderName}

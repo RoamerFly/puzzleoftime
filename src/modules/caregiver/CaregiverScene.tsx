@@ -11,7 +11,7 @@
  * - resume / 已完成 → 保留历史进度（保证历史面板数据准确）
  */
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ChapterSceneProps } from '../../core/chapterRegistry';
 import { useChapterState } from '../../core/hooks/useChapterState';
 import type { CaregiverState, EventResult } from './data/caregiverState';
@@ -35,6 +35,7 @@ import { TimeBar } from './components/TimeBar';
 // P0-A: buildAutoRecord 作为记录生成的唯一来源
 import { buildAutoRecordV2 } from './logic/recordRules';
 import type { InsightLevel } from './logic/insightRules';
+import { buildCaregiverHistoryReport } from './data/caregiverHistoryReport';
 import styles from './styles/caregiver.module.css';
 import './styles/tokens.css';
 import './styles/keyframes.css';
@@ -304,6 +305,19 @@ export function CaregiverScene({ onComplete }: ChapterSceneProps) {
   // ============================================================
   // 阶段渲染
   // ============================================================
+
+  // ============================================================
+  // 结局阶段：保存历史报告快照（用于 MainMenu 查看报告）
+  // 必须在所有 return 之前声明 hooks，否则违反 React Hook 规则
+  // ============================================================
+  const reportSavedRef = useRef(false);
+  useEffect(() => {
+    if (phase === 'ending' && !reportSavedRef.current) {
+      reportSavedRef.current = true;
+      const report = buildCaregiverHistoryReport(eventResults, handoverRecords);
+      updateState({ historyReport: report });
+    }
+  }, [phase, eventResults, handoverRecords, updateState]);
 
   // 开场 / 时间线过场
   if (phase === 'intro' || phase === 'shift-timeline') {

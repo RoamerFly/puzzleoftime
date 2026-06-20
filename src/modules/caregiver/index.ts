@@ -15,6 +15,9 @@ import type { ChapterConfig } from '../../core/chapterRegistry';
 
 export { CaregiverScene, CAREGIVER_INITIAL_STATE, caregiverAssets };
 
+// 历史报告类型（供 MainMenu 读取报告数据）
+export type { CaregiverHistoryReport } from './data/caregiverHistoryReport';
+
 /** 将 caregiverAssets 转为 ModuleAssets 兼容格式 */
 function mapAssetSrcs(assets: Record<string, CaregiverAssetEntry>): Record<string, string> {
   const mapped: Record<string, string> = {};

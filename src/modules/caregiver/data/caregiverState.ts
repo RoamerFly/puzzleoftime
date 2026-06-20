@@ -114,6 +114,9 @@ export interface CaregiverState {
   /** 所有事件的交互状态（线索三态 + 干预选择） */
   eventInteractionStates: EventInteractionState[];
 
+  /** 历史报告快照（完成时生成，供 MainMenu 查看报告） */
+  historyReport?: unknown;
+
   /** @deprecated D2 — 不再使用。观察深度由 recordedClueIds.length 间接表达 */
   observeProgress: number;
   /** @deprecated D2 — 不再使用。防止旧动画重复触发的标记 */

@@ -1,0 +1,492 @@
+/* === 历史报告内容组件样式 === */
+
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.emptyHint {
+  text-align: center;
+  color: var(--color-text-light);
+  font-style: italic;
+  padding: 20px 0;
+  font-size: 0.85rem;
+}
+
+.status {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4caf50;
+  margin: 0 0 2px;
+}
+
+/* ======== 通用 Section ======== */
+.section {
+  background: rgba(240, 225, 195, 0.35);
+  border: 1px solid rgba(180, 150, 110, 0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-title);
+  font-size: 0.88rem;
+  color: var(--color-text-primary);
+  margin: 0 0 10px;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(180, 150, 110, 0.25);
+  padding-bottom: 6px;
+}
+
+/* ======== 统计网格 ======== */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  background: rgba(255, 248, 235, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(180, 150, 110, 0.12);
+}
+
+.statIcon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.statNumber {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-title);
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+}
+
+/* ======== Elder 结局标签 ======== */
+.elderEndingTag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(220, 180, 120, 0.15);
+  border: 1px solid rgba(180, 150, 110, 0.3);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--color-accent-warm);
+  font-weight: 500;
+}
+
+.elderEndingIcon {
+  font-size: 1rem;
+}
+
+/* ======== Elder 状态条 ======== */
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.barItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.barLabel {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  min-width: 60px;
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(180, 150, 110, 0.15);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.barValue {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  min-width: 24px;
+  text-align: right;
+}
+
+/* ======== Caregiver 结局标签 ======== */
+.caregiverEndingTag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: rgba(220, 180, 120, 0.12);
+  border: 1px solid rgba(180, 150, 110, 0.25);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.caregiverEndingLabel {
+  font-family: var(--font-family-title);
+  font-size: 1rem;
+  color: var(--color-accent-warm);
+  font-weight: 600;
+}
+
+.caregiverEndingSubtitle {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ======== 干预分布条 ======== */
+.interventionBar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.interventionSuccess {
+  background: #6b8e4e;
+}
+
+.interventionPartial {
+  background: #c49a3c;
+}
+
+.interventionFailure {
+  background: #b5655a;
+}
+
+.interventionLegend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  color: var(--color-text-light);
+}
+
+/* ======== 老人回响卡片 ======== */
+.echoList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.echoCard {
+  background: rgba(255, 248, 235, 0.55);
+  border: 1px solid rgba(180, 150, 110, 0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.echoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.echoName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.echoInsight {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(180, 150, 110, 0.1);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.echoLine {
+  font-size: 0.74rem;
+  color: var(--color-text-secondary);
+  margin: 3px 0 0;
+  line-height: 1.5;
+}
+
+.echoTag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(180, 150, 110, 0.2);
+  color: var(--color-text-secondary);
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ======== 交接记录 ======== */
+.handoverList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.handoverItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 248, 235, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(180, 150, 110, 0.12);
+}
+
+.handoverElder {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent-warm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.handoverText {
+  font-size: 0.73rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* ======== 反思引用 ======== */
+.reflection {
+  background: rgba(220, 180, 120, 0.1);
+  border-left: 3px solid var(--color-accent-warm);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-style: italic;
+}
+
+.reflection p {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ======== Manager 标签 ======== */
+.tagRow {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 4px 0 8px;
+}
+
+.tagPrimary {
+  padding: 4px 16px;
+  border-radius: 14px;
+  background: rgba(139, 105, 20, 0.15);
+  border: 1px solid rgba(139, 105, 20, 0.35);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b4423;
+}
+
+.tagSecondary {
+  padding: 4px 16px;
+  border-radius: 14px;
+  background: rgba(160, 130, 100, 0.1);
+  border: 1px solid rgba(160, 130, 100, 0.25);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #7b6b5e;
+}
+
+/* ======== 信誉风险颜色 ======== */
+.riskLow { color: #4caf50; }
+.riskMedium { color: #d4a01e; }
+.riskHigh { color: #c0392b; }
+
+/* ======== 资源天平 ======== */
+.scaleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.scaleSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 55px;
+}
+
+.scaleLabel {
+  font-size: 0.68rem;
+  color: var(--color-text-light);
+}
+
+.scaleValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.scaleBar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(180, 150, 110, 0.2);
+  overflow: hidden;
+}
+
+.scaleFill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(100, 140, 100, 0.7), rgba(180, 150, 110, 0.6));
+  transition: width 0.4s ease;
+}
+
+.scaleText {
+  font-size: 0.74rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ======== 预算项目列表 ======== */
+.budgetList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.budgetItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(255, 248, 235, 0.55);
+  border-radius: 8px;
+  border: 1px solid rgba(180, 150, 110, 0.18);
+}
+
+.budgetName {
+  font-size: 0.82rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.budgetCost {
+  font-size: 0.78rem;
+  color: var(--color-accent-warm);
+  font-weight: 600;
+}
+
+/* ======== 四方反馈 ======== */
+.quadGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.quadCard {
+  background: rgba(255, 248, 235, 0.5);
+  border: 1px solid rgba(180, 150, 110, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.quadTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.quadText {
+  font-size: 0.73rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ======== 家庭来电 ======== */
+.familyCallCard {
+  background: rgba(255, 248, 235, 0.5);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.familyCallLine {
+  font-size: 0.82rem;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+.familyCallLine:last-child {
+  margin-bottom: 0;
+}
+
+/* ======== 院长手记 ======== */
+.monologue {
+  background: rgba(240, 225, 195, 0.45);
+  border-left: 3px solid var(--color-accent-warm);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-style: italic;
+}
+
+.monologue p {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ======== 旧存档提示 ======== */
+.legacyNote {
+  background: rgba(240, 225, 195, 0.4);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.legacyNote p {
+  font-size: 0.84rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 6px;
+  line-height: 1.6;
+}
+
+.legacyNote p:last-child {
+  margin-bottom: 0;
+  font-style: italic;
+  color: var(--color-text-light);
+}

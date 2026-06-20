@@ -4,9 +4,9 @@ import { useGame } from '../core/GameContext';
 import { Button } from '../components/ui/Button';
 import { Dialog } from '../components/ui/Dialog';
 import { PageTransition } from '../components/layout/PageTransition';
+import { ReportBody } from '../components/ui/ReportBody';
 import { getAllChapters } from '../core/chapterRegistry';
 import type { ChapterConfig } from '../core/chapterRegistry';
-import type { ManagerHistoryReport } from '../modules/manager';
 import styles from './MainMenu.module.css';
 
 /** 从章节私有状态中提取摘要信息 */
@@ -22,6 +22,17 @@ function extractChapterSummary(chapterId: string, chapterState: unknown): string
     return `收集了 ${frags} 个回忆碎片 · 结束时 ${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
   }
   if (chapterId === 'caregiver') {
+    const report = s.historyReport;
+    if (report && typeof report === 'object') {
+      const r = report as Record<string, unknown>;
+      const stats = r.stats as Record<string, unknown> | undefined;
+      const label = typeof r.label === 'string' ? r.label : '';
+      const ratio = stats?.understandingRatio ?? '?';
+      const success = stats?.successInterventions ?? '?';
+      return label
+        ? `${label} · 理解率 ${ratio}% · 合适干预 ${success} 次`
+        : `理解率 ${ratio}% · 合适干预 ${success} 次`;
+    }
     const tasks = Array.isArray(s.completedTasks) ? s.completedTasks.length : 0;
     return `完成了 ${tasks} 项任务`;
   }
@@ -38,17 +49,6 @@ function extractChapterSummary(chapterId: string, chapterState: unknown): string
     return `剩余预算: ${budget} 分`;
   }
   return '';
-}
-
-/** 类型守卫：判断一个值是否为有效的 ManagerHistoryReport */
-function isManagerHistoryReport(value: unknown): value is ManagerHistoryReport {
-  if (!value || typeof value !== 'object') return false;
-  const r = value as Record<string, unknown>;
-  return typeof r.version === 'string'
-    && typeof r.primaryTag === 'string'
-    && typeof r.secondaryTag === 'string'
-    && typeof r.remainingBudget === 'number'
-    && typeof r.indicators === 'object';
 }
 
 export function MainMenu() {
@@ -293,249 +293,10 @@ export function MainMenu() {
                 {reportChapter.icon} {reportChapter.title}
               </h2>
               <div className={styles.reportContent}>
-                {(() => {
-                  const cs = state.progress.chapters[reportChapter.chapterId];
-                  if (!cs || typeof cs !== 'object') return <p>暂无详细数据</p>;
-                  const s = cs as Record<string, unknown>;
-
-                  if (reportChapter.chapterId === 'elder') {
-                    const frags = Array.isArray(s.collectedFragments) ? s.collectedFragments.length : 0;
-                    const gt = typeof s.gameTime === 'number' ? s.gameTime : 0;
-                    const h = Math.floor(6 + gt / 60) % 24;
-                    const m = gt % 60;
-                    const status = s.status as Record<string, number> | undefined;
-                    return (
-                      <>
-                        <p className={styles.reportStatus}>状态：已完成 ✓</p>
-                        <div className={styles.reportSummary}>
-                          <div className={styles.reportGrid}>
-                            <div className={styles.reportItem}>
-                              <span className={styles.reportLabel}>收集回忆碎片</span>
-                              <span className={styles.reportValue}>{frags} 个</span>
-                            </div>
-                            <div className={styles.reportItem}>
-                              <span className={styles.reportLabel}>结束时间</span>
-                              <span className={styles.reportValue}>{String(h).padStart(2, '0')}:{String(m).padStart(2, '0')}</span>
-                            </div>
-                            {status && (
-                              <>
-                                <div className={styles.reportItem}>
-                                  <span className={styles.reportLabel}>体力</span>
-                                  <span className={styles.reportValue}>{status.energy ?? '?'}</span>
-                                </div>
-                                <div className={styles.reportItem}>
-                                  <span className={styles.reportLabel}>心情</span>
-                                  <span className={styles.reportValue}>{status.mood ?? '?'}</span>
-                                </div>
-                                <div className={styles.reportItem}>
-                                  <span className={styles.reportLabel}>健康</span>
-                                  <span className={styles.reportValue}>{status.health ?? '?'}</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    );
-                  }
-
-                  if (reportChapter.chapterId === 'manager') {
-                    const report = s.historyReport;
-                    if (!report || !isManagerHistoryReport(report)) {
-                      // 旧存档兼容：没有 historyReport
-                      return (
-                        <>
-                          <p className={styles.reportStatus}>状态：已完成 ✓</p>
-                          <div className={styles.reportLegacyNote}>
-                            <p>该记录来自旧版本，未保存详细决策报告。</p>
-                            <p>重新体验第三章后即可生成完整报告。</p>
-                          </div>
-                        </>
-                      );
-                    }
-
-                    const riskLabel = report.reputationRisk === 'low' ? '低' : report.reputationRisk === 'medium' ? '中' : '高';
-                    const riskClass = report.reputationRisk === 'high' ? styles.managerReportRiskHigh : report.reputationRisk === 'medium' ? styles.managerReportRiskMedium : styles.managerReportRiskLow;
-
-                    return (
-                      <div className={styles.managerReport}>
-                        <p className={styles.reportStatus}>状态：已完成 ✓</p>
-
-                        {/* 标签 */}
-                        <div className={styles.managerReportTags}>
-                          <span className={styles.managerReportTagPrimary}>{report.primaryTag}</span>
-                          <span className={styles.managerReportTagSecondary}>{report.secondaryTag}</span>
-                        </div>
-
-                        {/* 决策概况 */}
-                        <div className={styles.managerReportSection}>
-                          <h3 className={styles.managerReportSectionTitle}>决策概况</h3>
-                          <div className={styles.managerReportGrid}>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>批准项目</span>
-                              <span className={styles.managerReportGridValue}>{report.approvedItems.length} 项</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>剩余预算</span>
-                              <span className={styles.managerReportGridValue}>{report.remainingBudget} / {report.totalBudget} 分</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>突发事件</span>
-                              <span className={styles.managerReportGridValue}>{report.workEventsCompleted} 个</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>临时调整</span>
-                              <span className={styles.managerReportGridValue}>{report.adjustmentUsed} 次</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>信誉风险</span>
-                              <span className={`${styles.managerReportGridValue} ${riskClass}`}>{riskLabel}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 批准项目明细 */}
-                        {report.approvedItems.length > 0 && (
-                          <div className={styles.managerReportSection}>
-                            <h3 className={styles.managerReportSectionTitle}>批准预算项目</h3>
-                            <div className={styles.managerReportBudgetList}>
-                              {report.approvedItems.map(item => (
-                                <div key={item.id} className={styles.managerReportBudgetItem}>
-                                  <span className={styles.managerReportBudgetName}>{item.title}</span>
-                                  <span className={styles.managerReportBudgetCost}>{item.cost} 分</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* 资源天平 */}
-                        <div className={styles.managerReportSection}>
-                          <h3 className={styles.managerReportSectionTitle}>⚖️ 资源天平</h3>
-                          <div className={styles.managerReportScale}>
-                            <div className={styles.managerReportScaleSide}>
-                              <span className={styles.managerReportScaleLabel}>照护质量</span>
-                              <span className={styles.managerReportScaleValue}>{report.scale.careQualityScore}</span>
-                            </div>
-                            <div className={styles.managerReportScaleBar}>
-                              <div
-                                className={styles.managerReportScaleFill}
-                                style={{
-                                  width: `${Math.min(100, (report.scale.careQualityScore / (report.scale.careQualityScore + report.scale.operationPressureScore)) * 100)}%`,
-                                }}
-                              />
-                            </div>
-                            <div className={styles.managerReportScaleSide}>
-                              <span className={styles.managerReportScaleLabel}>运营压力</span>
-                              <span className={styles.managerReportScaleValue}>{report.scale.operationPressureScore}</span>
-                            </div>
-                          </div>
-                          <p className={styles.managerReportScaleText}>{report.scale.balanceText}</p>
-                        </div>
-
-                        {/* 最终指标 */}
-                        <div className={styles.managerReportSection}>
-                          <h3 className={styles.managerReportSectionTitle}>最终指标</h3>
-                          <div className={styles.managerReportGrid}>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>🛡️ 安全保障</span>
-                              <span className={styles.managerReportGridValue}>{report.indicators.safety ?? '?'}</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>💜 老人尊严</span>
-                              <span className={styles.managerReportGridValue}>{report.indicators.dignity ?? '?'}</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>👨‍👩‍👧 家属满意</span>
-                              <span className={styles.managerReportGridValue}>{report.indicators.family ?? '?'}</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>👩‍⚕️ 护理员压力</span>
-                              <span className={styles.managerReportGridValue}>{report.indicators.staff ?? '?'}</span>
-                            </div>
-                            <div className={styles.managerReportGridItem}>
-                              <span className={styles.managerReportGridLabel}>💰 运营成本</span>
-                              <span className={styles.managerReportGridValue}>{report.indicators.cost ?? '?'}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 突发事件 */}
-                        {report.workEvents.length > 0 && (
-                          <div className={styles.managerReportSection}>
-                            <h3 className={styles.managerReportSectionTitle}>突发事件</h3>
-                            {report.workEvents.map((ev, i) => (
-                              <div key={i} className={styles.managerReportEventCard}>
-                                <div className={styles.managerReportEventHeader}>
-                                  <span className={styles.managerReportEventName}>{i + 1}. {ev.title}</span>
-                                  <span className={styles.managerReportEventSeverity}>
-                                    {ev.severity === 'low' ? '低风险' : ev.severity === 'medium' ? '中风险' : '高风险'}
-                                  </span>
-                                </div>
-                                <p className={styles.managerReportEventDesc}>{ev.description}</p>
-                                <p className={styles.managerReportEventOutcome}>
-                                  <strong>处理方式：</strong>{ev.chosenOptionLabel}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* 四方反馈 */}
-                        <div className={styles.managerReportSection}>
-                          <h3 className={styles.managerReportSectionTitle}>四方反馈</h3>
-                          <div className={styles.managerReportQuadGrid}>
-                            <div className={styles.managerReportQuadCard}>
-                              <span className={styles.managerReportQuadIcon}>👴</span>
-                              <span className={styles.managerReportQuadTitle}>老人</span>
-                              <p className={styles.managerReportQuadText}>{report.quadFeedback.elderly}</p>
-                            </div>
-                            <div className={styles.managerReportQuadCard}>
-                              <span className={styles.managerReportQuadIcon}>👨‍👩‍👧</span>
-                              <span className={styles.managerReportQuadTitle}>家属</span>
-                              <p className={styles.managerReportQuadText}>{report.quadFeedback.family}</p>
-                            </div>
-                            <div className={styles.managerReportQuadCard}>
-                              <span className={styles.managerReportQuadIcon}>👩‍⚕️</span>
-                              <span className={styles.managerReportQuadTitle}>护理员</span>
-                              <p className={styles.managerReportQuadText}>{report.quadFeedback.caregiver}</p>
-                            </div>
-                            <div className={styles.managerReportQuadCard}>
-                              <span className={styles.managerReportQuadIcon}>🏛️</span>
-                              <span className={styles.managerReportQuadTitle}>管理/运营方</span>
-                              <p className={styles.managerReportQuadText}>{report.quadFeedback.management}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 家庭来电 */}
-                        <div className={styles.managerReportSection}>
-                          <h3 className={styles.managerReportSectionTitle}>家庭来电</h3>
-                          <div className={styles.managerReportFamilyCall}>
-                            <p className={styles.managerReportFamilyCallLine}>
-                              <strong>来电人：</strong>{report.familyCall.callerLabel}
-                            </p>
-                            <p className={styles.managerReportFamilyCallLine}>
-                              <strong>选择：</strong>{report.familyCall.choiceLabel}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* 院长内心独白 */}
-                        {report.monologue && (
-                          <div className={styles.managerReportSection}>
-                            <h3 className={styles.managerReportSectionTitle}>院长手记</h3>
-                            <div className={styles.managerReportMonologue}>
-                              <p>"{report.monologue}"</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  return <p>详细数据：{JSON.stringify(s).slice(0, 100)}</p>;
-                })()}
+                <ReportBody
+                  chapterId={reportChapter.chapterId}
+                  chapterState={state.progress.chapters[reportChapter.chapterId]}
+                />
               </div>
               <button className={styles.modalClose} onClick={() => setReportChapter(null)}>✕</button>
             </div>
