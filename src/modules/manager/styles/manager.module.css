@@ -1,0 +1,7814 @@
+/* === 院长模块根节点 — full-bleed 固定定位，覆盖整个视口 === */
+.managerRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  font-family: var(--font-family-body);
+  background: #f3e3bd;
+}
+
+/* 轻量章节标签 */
+.chapterLabel {
+  position: fixed;
+  top: 8px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(42, 30, 18, 0.55);
+  border: 1px solid rgba(184, 154, 104, 0.3);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.chapterLabelIcon {
+  font-size: 0.85rem;
+}
+
+.chapterLabelText {
+  font-size: 0.68rem;
+  color: rgba(245, 230, 200, 0.75);
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+/* ================================================================
+   办公室场景 — 作为第一视觉主体，铺满整个可视区域
+   ================================================================ */
+.officeScene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  /* ── 基于原图 1672×941 的显示器屏幕/按钮定位变量 ── */
+  --monitor-screen-left: 38.8%;
+  --monitor-screen-top: 42.5%;
+  --monitor-screen-width: 19.0%;
+  --monitor-screen-height: 21.0%;
+
+  --monitor-power-left: 55.0%;
+  --monitor-power-top: 62.8%;
+  --monitor-power-width: 3.9%;
+  --monitor-power-height: 4.5%;
+}
+
+/* 场景内部容器 — 铺满 .officeScene，不设置 16:9 / max-width 限制 */
+.officeSceneInner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 办公室图片 — 铺满容器，保持比例，允许轻微裁切 */
+.officeImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* 夜晚渐变遮罩 — 可交互模式：轻微压暗，不覆盖中心和电话区域 */
+.nightMask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 夜晚灯光层 — 视觉装饰，不可交互 */
+
+/* 台灯暖光层：集中照亮桌面左侧、电话、电脑左半 */
+.nightLampGlow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 38% 55% at 32% 58%, rgba(255, 220, 150, 0.34) 0%, rgba(255, 190, 110, 0.16) 30%, transparent 60%),
+    radial-gradient(circle at 38% 64%, rgba(255, 240, 180, 0.18) 0%, transparent 35%);
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+/* 窗外月光层：集中在窗户附近，不铺满全屏 */
+.nightMoonGlow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 28% 30% at 66% 20%, rgba(150, 190, 235, 0.18) 0%, rgba(120, 160, 220, 0.06) 40%, transparent 65%);
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+/* 电脑屏幕冷光层：集中在屏幕区域，不压过台灯光 */
+.nightMonitorGlow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 22% 28% at 50% 46%, rgba(170, 210, 255, 0.14) 0%, rgba(140, 180, 240, 0.05) 40%, transparent 58%);
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+/* ── 最终收束暗场灯光：更暗、更克制 ── */
+.officeNightEnding .nightLampGlow {
+  background:
+    radial-gradient(ellipse 38% 55% at 32% 58%, rgba(255, 200, 120, 0.14) 0%, rgba(255, 160, 80, 0.06) 30%, transparent 55%);
+}
+
+.officeNightEnding .nightMoonGlow {
+  background:
+    radial-gradient(ellipse 28% 30% at 66% 20%, rgba(120, 160, 210, 0.08) 0%, rgba(90, 130, 190, 0.03) 35%, transparent 55%);
+}
+
+.officeNightEnding .nightMonitorGlow {
+  background:
+    radial-gradient(ellipse 22% 28% at 50% 46%, rgba(140, 180, 220, 0.06) 0%, rgba(110, 150, 200, 0.02) 35%, transparent 50%);
+}
+
+/* ================================================================
+   场景交互热点 — 贴合背景图真实物体的百分比定位区域
+   ================================================================ */
+
+/* 可点击的透明热点区域 */
+.hotspotArea {
+  position: absolute;
+  z-index: 4;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: box-shadow 0.3s ease;
+  outline: none;
+}
+
+/* 电脑显示器区域 — 约在画面右中侧 */
+.hotspotAreaComputer {
+  left: 40%;
+  top: 42%;
+  width: 22%;
+  height: 24%;
+}
+
+/* 电话机区域 — 约在画面左下方桌面 */
+.hotspotAreaPhone {
+  left: 9%;
+  top: 61%;
+  width: 17%;
+  height: 23%;
+}
+
+/* 公告板区域 — 左侧墙面大木板公告板 */
+.hotspotAreaBulletin {
+  left: 8%;
+  top: 8%;
+  width: 34%;
+  height: 38%;
+}
+
+/* Hover 时物件局部高亮 — 边框光晕 */
+.hotspotAreaHovered {
+  box-shadow:
+    inset 0 0 24px rgba(245, 230, 200, 0.12),
+    0 0 10px rgba(184, 154, 104, 0.3);
+}
+
+/* 电脑显示器屏幕发光区域 — 默认透明，hover 时微亮 */
+.hotspotScreenGlow {
+  position: absolute;
+  inset: 6%;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: all 0.35s ease;
+  pointer-events: none;
+  background: transparent;
+}
+
+.hotspotAreaComputer:hover .hotspotScreenGlow {
+  border-color: rgba(100, 149, 237, 0.3);
+  background: rgba(100, 149, 237, 0.06);
+  box-shadow: inset 0 0 28px rgba(100, 149, 237, 0.12);
+}
+
+/* ── 提示气泡 ── */
+.hotspotTooltip {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(42, 30, 18, 0.88);
+  border: 1px solid rgba(184, 154, 104, 0.5);
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+  animation: tooltipFadeIn 0.2s ease;
+  pointer-events: none;
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hotspotTooltipIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.hotspotTooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hotspotTooltipTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #F5E6C8;
+  line-height: 1.3;
+}
+
+.hotspotTooltipSub {
+  font-size: 0.68rem;
+  color: rgba(200, 180, 150, 0.8);
+  line-height: 1.3;
+}
+
+/* 紧急状态的提示气泡 */
+.hotspotTooltipUrgent {
+  border-color: rgba(211, 47, 47, 0.5);
+  background: rgba(50, 20, 20, 0.9);
+}
+
+.hotspotTooltipUrgent .hotspotTooltipTitle {
+  color: #ff9090;
+}
+
+.hotspotTooltipUrgent .hotspotTooltipSub {
+  color: rgba(255, 150, 150, 0.85);
+}
+
+/* 电脑气泡 — 出现在屏幕上方 */
+.hotspotAreaComputer .hotspotTooltip,
+.screenHotspot .hotspotTooltip,
+.powerButtonHotspot .hotspotTooltip {
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 电话气泡 — 出现在电话机右侧 */
+.hotspotAreaPhone .hotspotTooltip {
+  top: 0;
+  left: 108%;
+}
+
+/* 公告板气泡 — 出现在公告板下方 */
+.hotspotAreaBulletin .hotspotTooltip {
+  top: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── 电话响铃状态 ── */
+.hotspotAreaPhoneRinging {
+  cursor: pointer !important;
+}
+
+/* 电话来电光圈 — 多层脉冲效果 */
+.phoneRingGlow {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 120, 40, 0.5);
+  background: radial-gradient(ellipse, rgba(255, 120, 40, 0) 40%, rgba(255, 120, 40, 0.1) 85%);
+  pointer-events: none;
+  animation: phoneRingGlowPulse 0.8s ease-in-out infinite;
+}
+
+.phoneRingPulse1,
+.phoneRingPulse2 {
+  position: absolute;
+  inset: -6%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 100, 30, 0.4);
+  pointer-events: none;
+  animation: phoneRingExpand 1.5s ease-out infinite;
+}
+
+.phoneRingPulse2 {
+  animation-delay: 0.75s;
+}
+
+@keyframes phoneRingGlowPulse {
+  0%, 100% {
+    border-color: rgba(255, 120, 40, 0.4);
+    background: radial-gradient(ellipse, rgba(255, 120, 40, 0) 40%, rgba(255, 120, 40, 0.08) 85%);
+  }
+  50% {
+    border-color: rgba(255, 120, 40, 0.7);
+    background: radial-gradient(ellipse, rgba(255, 120, 40, 0) 40%, rgba(255, 120, 40, 0.18) 85%);
+  }
+}
+
+@keyframes phoneRingExpand {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* ================================================================
+   电脑聚焦视图 — 使用电脑近景图作为背景，ComputerSystem 嵌入屏幕区域
+   图片尺寸 1672×941 ≈ 16:9
+   ================================================================ */
+
+/* 全屏固定容器 */
+.computerFocusImageView {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: #1a120d;
+}
+
+/* 
+ * 图片定位舞台 — 宽高始终按 16:9 比例覆盖整个视口
+ * 确保 computerScreenHotArea 的百分比坐标始终相对于图片本身
+ */
+.computerFocusImageStage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100vw, calc(100vh * 16 / 9));
+  height: max(100vh, calc(100vw * 9 / 16));
+  transform: translate(-50%, -50%);
+}
+
+/* 电脑近景图 — 铺满舞台，不参与交互 */
+.computerFocusImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 电脑近景背景淡入过渡 */
+.computerFocusFadeIn {
+  animation: computerFocusFadeIn 0.3s ease-out;
+}
+
+@keyframes computerFocusFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 
+ * 屏幕热区 — ComputerSystem 的裁剪嵌入容器
+ * 参数基于 manager-computer-focus.png (1672×941) 中显示器屏幕区域的微调值
+ * 调试时可临时取消 outline 注释核对边界
+ */
+.computerScreenHotArea {
+  position: absolute;
+  left: 13.8%;
+  top: 8.7%;
+  width: 71.5%;
+  height: 70.8%;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #071019;
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.72),
+    inset 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+/* 调试红线 — 确认位置后注释或删除 */
+/*
+.computerScreenHotArea {
+  outline: 2px solid red;
+}
+*/
+
+/* 屏幕玻璃反光 + 暗角 — ::before */
+.computerScreenHotArea::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.34) 100%),
+    linear-gradient(115deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 18%, rgba(255,255,255,0) 42%);
+  mix-blend-mode: screen;
+}
+
+/* 扫描线 — ::after */
+.computerScreenHotArea::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.035) 0,
+    rgba(255,255,255,0.035) 1px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
+  opacity: 0.45;
+}
+
+/* ================================================================
+   嵌入模式（在电脑近景图的屏幕热区内渲染）
+   ================================================================ */
+
+/* 嵌入式系统根容器 — 充满 computerScreenHotArea，背景透明让屏幕底色透出 */
+.computerEmbedded {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ── 夜晚电脑近景：屏幕内系统 UI 亮度降至 80%（仅降低嵌入内容，不压暗背景图）── */
+.computerScreenHotAreaNight .computerEmbedded {
+  filter: brightness(0.8);
+}
+
+/* 嵌入模式下的紧凑覆盖 — 明亮管理系统风格 */
+.computerEmbedded .computerTitleBar {
+  padding: clamp(3px, 0.5vh, 5px) clamp(6px, 1vw, 10px);
+  min-height: clamp(22px, 3.2vh, 28px);
+  background: linear-gradient(180deg, #e8dfcd, #dcd3ba);
+  border-bottom: 1px solid rgba(180, 160, 130, 0.5);
+}
+
+.computerEmbedded .computerTitleLeft {
+  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  gap: 4px;
+}
+
+.computerEmbedded .computerTitleIcon {
+  font-size: clamp(0.6rem, 0.95vw, 0.7rem);
+  color: #1d5fd0;
+}
+
+.computerEmbedded .computerTitleText {
+  font-size: clamp(0.62rem, 1.05vw, 0.72rem);
+  font-weight: 700;
+  color: #1a2536;
+}
+
+.computerEmbedded .computerTitleSep {
+  color: #b0a590;
+  margin: 0 3px;
+  font-size: 0.55rem;
+}
+
+.computerEmbedded .computerTitleSub {
+  display: inline;
+  color: #566480;
+  font-size: clamp(0.55rem, 0.85vw, 0.62rem);
+  white-space: nowrap;
+}
+
+.computerEmbedded .computerTitleStatus {
+  color: #ea7a1f;
+  font-size: clamp(0.54rem, 0.84vw, 0.6rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.computerEmbedded .computerTitleDate {
+  color: #7a8094;
+  font-size: clamp(0.52rem, 0.8vw, 0.58rem);
+  white-space: nowrap;
+  margin-left: 3px;
+}
+
+.computerEmbedded .computerTitleRight {
+  gap: 2px;
+}
+
+.computerEmbedded .returnOfficeButton {
+  padding: clamp(2px, 0.3vh, 3px) clamp(6px, 0.8vw, 10px) clamp(2px, 0.3vh, 3px) clamp(5px, 0.7vw, 8px);
+  font-size: clamp(0.54rem, 0.8vw, 0.64rem);
+  gap: clamp(3px, 0.5vw, 5px);
+}
+
+.computerEmbedded .returnOfficeIcon svg {
+  width: clamp(11px, 1.4vw, 14px);
+  height: clamp(11px, 1.4vw, 14px);
+}
+
+.computerEmbedded .computerBody {
+  flex: 1;
+  min-height: 0;
+  background: #f4efe2;
+}
+
+.computerEmbedded .computerSidebar {
+  width: clamp(80px, 13vw, 120px);
+  background: #f7f2e8;
+  border-right: 1px solid rgba(180, 160, 130, 0.4);
+}
+
+.computerEmbedded .sidebarItem {
+  padding: clamp(4px, 0.7vh, 7px) clamp(5px, 0.9vw, 10px);
+  font-size: clamp(0.6rem, 0.9vw, 0.7rem);
+  gap: 5px;
+}
+
+.computerEmbedded .sidebarItemIcon {
+  font-size: clamp(0.7rem, 0.95vw, 0.78rem);
+  width: clamp(18px, 2.5vw, 22px);
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.computerEmbedded .sidebarItemActive {
+  background: rgba(29, 95, 208, 0.1);
+  border-left-color: #1d5fd0;
+  color: #1a2536;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.computerEmbedded .sidebarItemLabel {
+  font-size: clamp(0.6rem, 0.9vw, 0.7rem);
+}
+
+.computerEmbedded .notificationDot {
+  width: 6px;
+  height: 6px;
+  background: #ea6b4a;
+}
+
+/* 用户状态块 */
+.computerEmbedded .sidebarUserBlock {
+  padding: clamp(4px, 0.55vh, 6px) clamp(5px, 0.9vw, 10px);
+  font-size: clamp(0.55rem, 0.8vw, 0.62rem);
+}
+
+.computerEmbedded .computerContent {
+  padding: clamp(5px, 0.8vw, 10px) clamp(6px, 1vw, 14px);
+  background: #f8f4ec;
+}
+
+.computerEmbedded .computerRightSidebar {
+  width: clamp(125px, 18vw, 165px);
+  padding: clamp(4px, 0.6vh, 8px) clamp(3px, 0.5vw, 6px);
+  background: #f5f1e7;
+  border-left: 1px solid rgba(180, 160, 130, 0.4);
+  gap: clamp(3px, 0.4vh, 5px);
+}
+
+.computerEmbedded .rightSidebarCard {
+  padding: clamp(4px, 0.55vh, 7px) clamp(4px, 0.5vw, 7px);
+  margin-bottom: 0;
+}
+
+.computerEmbedded .rightSidebarCardTitle {
+  font-size: clamp(0.56rem, 0.8vw, 0.64rem);
+  margin-bottom: clamp(2px, 0.3vh, 4px);
+}
+
+.computerEmbedded .rightSidebarItem {
+  font-size: clamp(0.58rem, 0.82vw, 0.66rem);
+  padding: 2px 0;
+}
+
+.computerEmbedded .rightSidebarLabel {
+  font-size: clamp(0.56rem, 0.78vw, 0.64rem);
+}
+
+.computerEmbedded .rightSidebarValue {
+  font-size: clamp(0.58rem, 0.82vw, 0.66rem);
+}
+
+.computerEmbedded .rightSidebarValueHighlight {
+  font-size: clamp(0.6rem, 0.84vw, 0.68rem);
+}
+
+.computerEmbedded .rightSidebarHint {
+  font-size: clamp(0.56rem, 0.8vw, 0.64rem);
+  padding: 3px 4px;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.computerEmbedded .rightSidebarWarnTag {
+  font-size: clamp(0.52rem, 0.72vw, 0.6rem);
+  padding: 2px 4px;
+}
+
+.computerEmbedded .rightSidebarRiskBadge {
+  font-size: clamp(0.56rem, 0.78vw, 0.64rem);
+}
+
+.computerEmbedded .rightSidebarProgressWrap {
+  margin-top: 3px;
+  gap: 4px;
+}
+
+.computerEmbedded .rightSidebarProgressTrack {
+  height: clamp(4px, 0.55vh, 5px);
+}
+
+.computerEmbedded .rightSidebarProgressLabel {
+  font-size: clamp(0.52rem, 0.72vw, 0.6rem);
+}
+
+/* 旧 rightSidebarSection 覆盖（以防还用到） */
+.computerEmbedded .rightSidebarSection {
+  padding: clamp(4px, 0.55vh, 7px) clamp(3px, 0.5vw, 5px);
+}
+
+.computerEmbedded .rightSidebarTitle {
+  font-size: clamp(0.56rem, 0.8vw, 0.64rem);
+  margin-bottom: 3px;
+}
+
+/* 内容区通用紧凑 */
+.computerEmbedded .infoPanel {
+  padding: clamp(6px, 0.8vh, 10px) clamp(6px, 1vw, 12px);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .sectionTitle,
+.computerEmbedded .todoSectionTitle {
+  font-size: clamp(0.78rem, 1.1vw, 0.92rem);
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+  padding-bottom: clamp(3px, 0.4vh, 6px);
+  color: #1a2536;
+}
+
+.computerEmbedded .todoSection {
+  padding: clamp(5px, 0.8vh, 8px) clamp(6px, 1vw, 12px);
+  gap: clamp(6px, 0.8vh, 10px);
+}
+
+.computerEmbedded .todoBlock {
+  margin-bottom: clamp(6px, 0.8vh, 10px);
+}
+
+.computerEmbedded .todoBlockTitle {
+  font-size: clamp(0.6rem, 0.84vw, 0.7rem);
+  margin-bottom: 3px;
+  color: #1d5fd0;
+}
+
+.computerEmbedded .todoTaskItem {
+  font-size: clamp(0.64rem, 0.92vw, 0.76rem);
+  padding: 4px 7px;
+  gap: 4px;
+}
+
+.computerEmbedded .todoTaskNum {
+  font-size: clamp(0.6rem, 0.84vw, 0.7rem);
+  min-width: 16px;
+}
+
+.computerEmbedded .todoTaskTag {
+  font-size: clamp(0.52rem, 0.72vw, 0.62rem);
+  padding: 1px 5px;
+}
+
+.computerEmbedded .todoTaskDoneBadge {
+  font-size: clamp(0.52rem, 0.72vw, 0.62rem);
+  padding: 1px 5px;
+}
+
+.computerEmbedded .todoTaskCurrentBadge {
+  font-size: clamp(0.52rem, 0.72vw, 0.62rem);
+  padding: 1px 5px;
+}
+
+.computerEmbedded .todoSummaryGrid {
+  gap: clamp(3px, 0.4vh, 5px);
+}
+
+.computerEmbedded .dashboardCard {
+  padding: clamp(5px, 0.7vh, 8px) clamp(5px, 0.7vw, 8px);
+  gap: clamp(4px, 0.5vw, 6px);
+  min-height: auto;
+}
+
+.computerEmbedded .dashboardCardIcon {
+  width: clamp(30px, 4.2vw, 38px);
+  height: clamp(30px, 4.2vw, 38px);
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+}
+
+.computerEmbedded .dashboardCardValue {
+  font-size: clamp(0.88rem, 1.2vw, 1.05rem);
+}
+
+.computerEmbedded .dashboardCardValue .dashboardCardUnit {
+  font-size: clamp(0.56rem, 0.78vw, 0.64rem);
+}
+
+.computerEmbedded .dashboardCardLabel {
+  font-size: clamp(0.56rem, 0.78vw, 0.66rem);
+}
+
+.computerEmbedded .dashboardCardValueRisk {
+  font-size: clamp(0.88rem, 1.2vw, 1.05rem);
+}
+
+.computerEmbedded .todoRiskTags {
+  gap: clamp(3px, 0.4vw, 4px);
+  margin-top: 2px;
+}
+
+.computerEmbedded .todoRiskTag {
+  font-size: clamp(0.52rem, 0.72vw, 0.62rem);
+  padding: 2px 5px;
+}
+
+.computerEmbedded .todoNext {
+  padding: 5px 0;
+  margin-top: clamp(4px, 0.6vh, 8px);
+}
+
+.computerEmbedded .todoNextBtn {
+  padding: clamp(6px, 0.8vh, 9px) clamp(8px, 1.2vw, 14px);
+  font-size: clamp(0.68rem, 0.95vw, 0.78rem);
+}
+
+.computerEmbedded .todoNextBtnIcon {
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
+}
+
+.computerEmbedded .todoNextBtnArrow {
+  font-size: clamp(0.58rem, 0.8vw, 0.68rem);
+}
+
+.computerEmbedded .todoSummaryRow {
+  padding: 4px 7px;
+  font-size: clamp(0.6rem, 0.85vw, 0.7rem);
+}
+
+.computerEmbedded .todoSummaryLabel,
+.computerEmbedded .todoSummaryValue {
+  font-size: clamp(0.6rem, 0.85vw, 0.7rem);
+}
+
+.computerEmbedded .reportHeader,
+.computerEmbedded .reportRow {
+  padding: clamp(5px, 0.6vh, 8px) clamp(6px, 0.8vw, 12px);
+  font-size: clamp(0.62rem, 0.88vw, 0.76rem);
+}
+
+.computerEmbedded .reportSubtitle {
+  font-size: clamp(0.62rem, 0.88vw, 0.74rem);
+  margin-bottom: 8px;
+  color: #5c6b7e;
+}
+
+.computerEmbedded .reportDiagnosis {
+  padding: 8px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+}
+
+.computerEmbedded .reportDiagnosisItem {
+  font-size: clamp(0.64rem, 0.88vw, 0.76rem);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .reportDiagnosisTitle {
+  font-size: clamp(0.6rem, 0.82vw, 0.74rem);
+  color: #ea7a1f;
+}
+
+.computerEmbedded .notificationItem {
+  padding: clamp(6px, 0.8vh, 10px) clamp(6px, 1vw, 12px);
+  gap: 8px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+}
+
+.computerEmbedded .notificationTag {
+  font-size: clamp(0.52rem, 0.72vw, 0.64rem);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.computerEmbedded .notificationContent {
+  font-size: clamp(0.64rem, 0.88vw, 0.76rem);
+  color: #2c3a4a;
+}
+
+/* 预算面板嵌入紧凑 */
+.computerEmbedded .budgetPanel {
+  padding: clamp(5px, 0.8vh, 10px) clamp(5px, 0.9vw, 12px);
+}
+
+.computerEmbedded .budgetPanel .sectionTitle {
+  font-size: clamp(0.72rem, 1vw, 0.88rem);
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  color: #1a2536;
+}
+
+.computerEmbedded .choiceCard {
+  padding: clamp(5px, 0.8vh, 10px) clamp(5px, 0.9vw, 12px);
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .choiceTitle {
+  font-size: clamp(0.72rem, 1vw, 0.84rem);
+  color: #1a2536;
+}
+
+.computerEmbedded .choiceDesc {
+  font-size: clamp(0.64rem, 0.88vw, 0.74rem);
+  color: #3d5a7a;
+}
+
+.computerEmbedded .choiceCost {
+  font-size: clamp(0.64rem, 0.88vw, 0.74rem);
+}
+
+.computerEmbedded .indicatorName {
+  font-size: clamp(0.66rem, 0.92vw, 0.76rem);
+  color: #3d5a7a;
+}
+
+.computerEmbedded .indicatorValue {
+  font-size: clamp(0.68rem, 0.92vw, 0.76rem);
+  color: #1a2536;
+}
+
+.computerEmbedded .submitBtn {
+  padding: clamp(6px, 0.9vh, 10px) clamp(14px, 2.2vw, 24px);
+  font-size: clamp(0.7rem, 0.95vw, 0.82rem);
+  background: linear-gradient(180deg, #ea7a1f, #d4681a);
+  color: #fff;
+  border: none;
+}
+
+.computerEmbedded .budgetBar {
+  padding: 6px 10px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+}
+
+.computerEmbedded .budgetLabel,
+.computerEmbedded .budgetText {
+  font-size: clamp(0.66rem, 0.92vw, 0.76rem);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .budgetTrack {
+  height: 7px;
+  background: rgba(180, 160, 130, 0.2);
+}
+
+.computerEmbedded .choicesGrid {
+  gap: clamp(4px, 0.6vw, 7px);
+}
+
+.computerEmbedded .choices {
+  width: 100%;
+}
+
+.computerEmbedded .choicesHint {
+  font-size: clamp(0.62rem, 0.84vw, 0.7rem);
+  margin-bottom: 5px;
+  color: #3d5a7a;
+}
+
+.computerEmbedded .indicators {
+  padding: clamp(5px, 0.7vh, 9px) clamp(5px, 0.9vw, 12px);
+  gap: 4px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+}
+
+.computerEmbedded .indicatorHeader {
+  gap: 3px;
+}
+
+.computerEmbedded .indicatorTrack {
+  height: 5px;
+  background: rgba(180, 160, 130, 0.2);
+}
+
+.computerEmbedded .submitBlocked {
+  padding: 6px 10px;
+  background: rgba(200, 120, 106, 0.08);
+  border: 1px solid rgba(200, 120, 106, 0.3);
+}
+
+.computerEmbedded .submitBlockedText {
+  font-size: clamp(0.64rem, 0.88vw, 0.74rem);
+  color: #c8786a;
+}
+
+.computerEmbedded .emptySubmitWarning {
+  font-size: clamp(0.66rem, 0.92vw, 0.76rem);
+  color: #c8786a;
+}
+
+/* 调整模式紧凑 */
+.computerEmbedded .adjustmentHeader {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  gap: 4px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+}
+
+.computerEmbedded .adjustmentLabel,
+.computerEmbedded .adjustmentCount {
+  font-size: clamp(0.66rem, 0.92vw, 0.76rem);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .adjustmentHint,
+.computerEmbedded .adjustmentExhausted {
+  font-size: clamp(0.66rem, 0.92vw, 0.76rem);
+}
+
+.computerEmbedded .adjustmentRisk {
+  font-size: clamp(0.6rem, 0.82vw, 0.7rem);
+}
+
+.computerEmbedded .adjustmentEventTag,
+.computerEmbedded .adjustmentSuggestTag {
+  font-size: clamp(0.6rem, 0.82vw, 0.7rem);
+}
+
+.computerEmbedded .revokeWarning {
+  font-size: clamp(0.64rem, 0.88vw, 0.74rem);
+  padding: 6px 12px;
+  background: rgba(201, 164, 64, 0.06);
+  border: 1px solid rgba(201, 164, 64, 0.35);
+  color: #2c3a4a;
+}
+
+/* 监控嵌入紧凑 */
+.computerEmbedded .monitorPanel {
+  padding: clamp(5px, 0.8vh, 10px) clamp(5px, 0.9vw, 12px);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .monitorMainFrame {
+  min-height: clamp(100px, 16vh, 150px);
+}
+
+.computerEmbedded .monitorMainLayout {
+  gap: 6px;
+}
+
+.computerEmbedded .monitorSideList {
+  width: clamp(85px, 12vw, 115px);
+  gap: 4px;
+}
+
+.computerEmbedded .monitorSideCard {
+  padding: 5px 7px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 3px;
+}
+
+.computerEmbedded .monitorSideCardActive {
+  background: #fef8ed;
+  border-left: 3px solid #1d5fd0;
+  border-color: rgba(29, 95, 208, 0.25);
+}
+
+.computerEmbedded .monitorSideId {
+  font-size: clamp(0.54rem, 0.72vw, 0.64rem);
+  color: #3d5a7a;
+}
+
+.computerEmbedded .monitorSideName {
+  font-size: clamp(0.6rem, 0.82vw, 0.72rem);
+  color: #1a2536;
+}
+
+.computerEmbedded .monitorSideNote {
+  font-size: clamp(0.54rem, 0.72vw, 0.62rem);
+  color: #c8786a;
+}
+
+.computerEmbedded .monitorMainCamId {
+  font-size: clamp(0.56rem, 0.72vw, 0.64rem);
+  padding: 3px 6px;
+  color: #eee;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.computerEmbedded .monitorMainStatus {
+  font-size: clamp(0.56rem, 0.72vw, 0.64rem);
+  color: #c8786a;
+  background: rgba(200, 120, 106, 0.2);
+  border: 1px solid rgba(200, 120, 106, 0.4);
+}
+
+.computerEmbedded .monitorMainLabel {
+  font-size: clamp(0.62rem, 0.88vw, 0.74rem);
+  margin-top: 5px;
+  padding: 6px 8px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .monitorHint {
+  font-size: clamp(0.6rem, 0.82vw, 0.7rem);
+  margin-bottom: 7px;
+  color: #5c6b7e;
+}
+
+.computerEmbedded .monitorSummaryFooter {
+  font-size: clamp(0.6rem, 0.82vw, 0.7rem);
+  padding: 6px 8px;
+  margin-top: 6px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  color: #2c3a4a;
+}
+
+.computerEmbedded .monitorRiskTag {
+  font-size: clamp(0.54rem, 0.72vw, 0.64rem);
+  color: #c8786a;
+}
+
+/* 邮件嵌入紧凑 */
+.computerEmbedded .mailContentArea {
+  padding: clamp(3px, 0.5vw, 6px) clamp(4px, 0.8vw, 8px);
+}
+
+.computerEmbedded .mailHeader {
+  margin-bottom: 5px;
+  padding-bottom: 4px;
+  gap: 8px;
+}
+
+.computerEmbedded .mailHeaderIcon {
+  font-size: clamp(0.68rem, 0.9vw, 0.78rem);
+}
+
+.computerEmbedded .mailHeaderTitle {
+  font-size: clamp(0.68rem, 0.95vw, 0.8rem);
+}
+
+.computerEmbedded .mailUnreadSummary {
+  font-size: clamp(0.54rem, 0.7vw, 0.6rem);
+}
+
+.computerEmbedded .markAllReadButton {
+  font-size: clamp(0.5rem, 0.64vw, 0.56rem);
+  padding: 2px 7px;
+}
+
+.computerEmbedded .mailPanelWrapper {
+  gap: 6px;
+}
+
+.computerEmbedded .mailListPanel {
+  width: clamp(120px, 16vw, 170px);
+  min-width: 100px;
+  max-width: 180px;
+}
+
+.computerEmbedded .mailCards {
+  gap: 3px;
+}
+
+.computerEmbedded .mailCard {
+  padding: 6px 7px;
+  border-radius: 3px;
+  gap: 2px;
+}
+
+.computerEmbedded .mailCardTop {
+  gap: 4px;
+}
+
+.computerEmbedded .mailCardSenderName {
+  font-size: clamp(0.56rem, 0.76vw, 0.64rem);
+}
+
+.computerEmbedded .mailCardTime {
+  font-size: clamp(0.48rem, 0.62vw, 0.52rem);
+}
+
+.computerEmbedded .mailUnreadDot {
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+}
+
+.computerEmbedded .mailCardSubject {
+  font-size: clamp(0.6rem, 0.82vw, 0.7rem);
+}
+
+.computerEmbedded .mailCardPreview {
+  font-size: clamp(0.54rem, 0.72vw, 0.6rem);
+}
+
+.computerEmbedded .mailCardTag {
+  font-size: clamp(0.48rem, 0.6vw, 0.52rem);
+}
+
+.computerEmbedded .mailDetailPanel {
+  padding: 6px 8px;
+  border-radius: 3px;
+}
+
+.computerEmbedded .mailDetailHeader {
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+.computerEmbedded .mailAvatar {
+  width: 24px;
+  height: 24px;
+  font-size: 0.62rem;
+}
+
+.computerEmbedded .mailDetailFromText {
+  font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+}
+
+.computerEmbedded .mailTypeBadge {
+  font-size: clamp(0.5rem, 0.64vw, 0.56rem);
+}
+
+.computerEmbedded .mailReadBadge {
+  font-size: clamp(0.5rem, 0.64vw, 0.56rem);
+}
+
+.computerEmbedded .mailDetailTitle {
+  font-size: clamp(0.68rem, 0.95vw, 0.82rem);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.computerEmbedded .mailDetailMeta {
+  font-size: clamp(0.54rem, 0.72vw, 0.62rem);
+  padding: 5px 7px;
+  margin-bottom: 8px;
+}
+
+.computerEmbedded .mailDetailMetaSep {
+  margin: 0 5px;
+  height: 10px;
+}
+
+.computerEmbedded .mailBodyPaper {
+  margin-bottom: 8px;
+}
+
+.computerEmbedded .mailBodyPaperInner {
+  padding: 12px 14px;
+}
+
+.computerEmbedded .mailBodyText {
+  font-size: clamp(0.64rem, 0.88vw, 0.74rem);
+  line-height: 1.7;
+}
+
+.computerEmbedded .mailMetricSection {
+  gap: 5px;
+  padding: 6px 7px;
+}
+
+.computerEmbedded .mailMetricLabel {
+  font-size: clamp(0.54rem, 0.72vw, 0.62rem);
+}
+
+.computerEmbedded .mailMetricTag {
+  font-size: clamp(0.54rem, 0.72vw, 0.62rem);
+}
+
+/* 状态栏嵌入紧凑 */
+.computerEmbedded .statusBar {
+  padding: clamp(2px, 0.3vh, 4px) clamp(6px, 1vw, 12px);
+  min-height: clamp(18px, 2.5vh, 24px);
+  gap: 0;
+  background: #e0d9c6;
+  border-top: 1px solid rgba(180, 160, 130, 0.5);
+}
+
+.computerEmbedded .statusBarLeft {
+  gap: clamp(3px, 0.5vw, 6px);
+}
+
+.computerEmbedded .statusItem {
+  font-size: clamp(0.54rem, 0.76vw, 0.64rem);
+  gap: 2px;
+}
+
+.computerEmbedded .statusLabel,
+.computerEmbedded .statusValue {
+  font-size: clamp(0.54rem, 0.76vw, 0.64rem);
+}
+
+.computerEmbedded .statusSep {
+  font-size: clamp(0.44rem, 0.56vw, 0.52rem);
+}
+
+.computerEmbedded .statusTipText {
+  font-size: clamp(0.52rem, 0.74vw, 0.62rem);
+}
+
+.computerEmbedded .statusBarRight {
+  max-width: clamp(140px, 20vw, 200px);
+}
+
+/* === 窗口标题栏 === */
+.computerTitleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px;
+  background: linear-gradient(180deg, #e8dfcd, #dcd3ba);
+  border-bottom: 1px solid rgba(180, 160, 130, 0.55);
+  flex-shrink: 0;
+  min-height: 30px;
+}
+
+.computerTitleLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: #1a2536;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.computerTitleIcon {
+  font-size: 0.72rem;
+  color: #1d5fd0;
+  flex-shrink: 0;
+}
+
+.computerTitleText {
+  font-weight: 700;
+  color: #151f2e;
+  letter-spacing: 0.02em;
+}
+
+.computerTitleSep {
+  color: #b0a590;
+  margin: 0 3px;
+  font-weight: 400;
+}
+
+.computerTitleSub {
+  color: #566480;
+  font-size: 0.66rem;
+}
+
+.computerTitleStatus {
+  color: #ea7a1f;
+  font-size: 0.64rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.computerTitleDate {
+  color: #7a8094;
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
+.computerTitleRight {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* === 返回办公室按钮（工具栏风格，替代窗口控制按钮） === */
+.windowActions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.returnOfficeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 8px;
+  background: rgba(232, 223, 205, 0.45);
+  border: 1px solid rgba(180, 160, 130, 0.4);
+  border-radius: 4px;
+  color: #5a5038;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 500;
+  font-family: var(--font-family-body);
+  line-height: 1.3;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.returnOfficeButton:hover {
+  background: rgba(212, 195, 160, 0.55);
+  border-color: rgba(160, 140, 110, 0.55);
+  color: #2a2215;
+}
+
+.returnOfficeButton:active {
+  background: rgba(200, 180, 145, 0.6);
+  transform: scale(0.97);
+}
+
+.returnOfficeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #7a6e55;
+}
+
+.returnOfficeButton:hover .returnOfficeIcon {
+  color: #5a4a30;
+}
+
+/* === 底部状态栏 === */
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px 10px;
+  background: #e0d9c6;
+  border-top: 1px solid rgba(180, 160, 130, 0.55);
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  min-height: 24px;
+  justify-content: space-between;
+}
+
+.statusBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.statusBarRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  overflow: hidden;
+  max-width: 280px;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+.statusLabel {
+  color: #7a8094;
+  font-size: 0.62rem;
+}
+
+.statusValue {
+  color: #1a2536;
+  font-weight: 600;
+  font-size: 0.66rem;
+}
+
+.statusRiskValue {
+  font-weight: 600;
+  font-size: 0.66rem;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.statusSep {
+  color: rgba(180, 160, 130, 0.5);
+  font-size: 0.5rem;
+  user-select: none;
+}
+
+.statusGood {
+  color: #87b96b !important;
+}
+
+.statusWarn {
+  color: #ea7a1f !important;
+}
+
+.statusDanger {
+  color: #ea6b4a !important;
+}
+
+.statusItemAlert {
+  background: rgba(234, 107, 74, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.statusTipIcon {
+  font-size: 0.58rem;
+  flex-shrink: 0;
+}
+
+.statusTipText {
+  font-size: 0.62rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === 电脑主体: 三栏 === */
+.computerBody {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background: #f4efe2;
+}
+
+/* === 左侧菜单 === */
+.computerSidebar {
+  width: 128px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f7f2e8;
+  border-right: 1px solid rgba(180, 160, 130, 0.4);
+  overflow-y: auto;
+}
+
+.sidebarNavGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  color: #566480;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.78rem;
+  font-family: var(--font-family-body);
+  text-align: left;
+  position: relative;
+  width: 100%;
+}
+
+.sidebarItem:hover {
+  background: rgba(29, 95, 208, 0.05);
+  color: #1a2536;
+}
+
+.sidebarItemActive {
+  background: rgba(29, 95, 208, 0.1);
+  border-left-color: #1d5fd0;
+  color: #1a2536;
+  font-weight: 700;
+}
+
+.sidebarItemIcon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.sidebarItemLabel {
+  flex: 1;
+  font-size: 0.78rem;
+}
+
+.notificationDot {
+  width: 6px;
+  height: 6px;
+  background: #ea6b4a;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 用户状态块 */
+.sidebarUserBlock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(180, 160, 130, 0.35);
+  font-size: 0.68rem;
+  color: #566480;
+  flex-shrink: 0;
+}
+
+.sidebarUserDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #87b96b;
+  flex-shrink: 0;
+}
+
+.sidebarUserName {
+  font-weight: 700;
+  color: #1a2536;
+}
+
+.sidebarUserStatus {
+  color: #7a8094;
+  margin-left: auto;
+}
+
+/* === 中间内容区 === */
+.computerContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  position: relative;
+  background: #f8f4ec;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180, 160, 130, 0.3) transparent;
+}
+
+/* === 右侧摘要栏 === */
+.computerRightSidebar {
+  width: 178px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #f5f1e7;
+  border-left: 1px solid rgba(180, 160, 130, 0.4);
+  overflow-y: auto;
+  padding: 7px 6px;
+}
+
+/* 右侧卡片 */
+.rightSidebarCard {
+  padding: 7px 7px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+.rightSidebarCardUrgent {
+  border-color: rgba(234, 107, 74, 0.4);
+  background: #fff5f2;
+}
+
+.rightSidebarCardTitle {
+  font-size: 0.66rem;
+  color: #1a2536;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 5px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.25);
+}
+
+.rightSidebarItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  font-size: 0.7rem;
+}
+
+.rightSidebarLabel {
+  color: #6b7280;
+}
+
+.rightSidebarValue {
+  color: #1a2536;
+  font-weight: 600;
+}
+
+.rightSidebarValueHighlight {
+  color: #ea7a1f;
+  font-weight: 700;
+}
+
+.rightSidebarValueGood {
+  color: #87b96b !important;
+}
+
+.rightSidebarValueWarn {
+  color: #ea7a1f !important;
+}
+
+.rightSidebarProgressWrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.rightSidebarProgressTrack {
+  flex: 1;
+  height: 5px;
+  background: rgba(180, 160, 130, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rightSidebarProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ea7a1f, #f0a050);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.rightSidebarProgressLabel {
+  font-size: 0.6rem;
+  color: #ea7a1f;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rightSidebarPulseText {
+  font-size: 0.64rem;
+  color: #ea6b4a;
+  margin: 0;
+  font-weight: 600;
+  animation: pulseText 1s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.rightSidebarRiskBadge {
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.riskBadgeLow {
+  background: rgba(135, 185, 107, 0.12);
+  color: #87b96b;
+  border: 1px solid rgba(135, 185, 107, 0.35);
+}
+
+.riskBadgeMedium {
+  background: rgba(234, 122, 31, 0.12);
+  color: #ea7a1f;
+  border: 1px solid rgba(234, 122, 31, 0.35);
+}
+
+.riskBadgeHigh {
+  background: rgba(234, 107, 74, 0.12);
+  color: #ea6b4a;
+  border: 1px solid rgba(234, 107, 74, 0.35);
+}
+
+.rightSidebarHint {
+  font-size: 0.64rem;
+  color: #566480;
+  padding: 4px 6px;
+  background: rgba(29, 95, 208, 0.04);
+  border: 1px solid rgba(180, 160, 130, 0.2);
+  border-radius: 3px;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.rightSidebarWarnTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.rightSidebarWarnTag {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  background: rgba(234, 107, 74, 0.08);
+  border: 1px solid rgba(234, 107, 74, 0.25);
+  border-radius: 3px;
+  color: #ea6b4a;
+  white-space: nowrap;
+}
+
+/* 保留旧 rightSidebarSection 以兼容 */
+.rightSidebarSection {
+  padding: 7px 6px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.2);
+  margin-bottom: 2px;
+}
+
+.rightSidebarSection:last-child {
+  border-bottom: none;
+}
+
+.rightSidebarTitle {
+  font-size: 0.64rem;
+  color: #566480;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 4px 0;
+}
+
+/* === 信息面板通用 === */
+.infoPanel {
+  color: #2c3a4a;
+  padding: 10px 14px;
+}
+
+.infoPanel .sectionTitle {
+  color: #1a2536;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.3);
+}
+
+/* ================================================================
+   今日待办 — 工作台首页
+   ================================================================ */
+.todoSection {
+  padding: 12px 18px;
+  color: #253242;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todoSectionTitle {
+  color: #1a2536;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.35);
+}
+
+.todoBlock {
+  margin-bottom: 4px;
+}
+
+.todoBlockTitle {
+  font-size: 0.72rem;
+  color: #1d5fd0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px 0;
+}
+
+.todoTaskList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.todoTaskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  font-size: 0.76rem;
+  color: #253242;
+}
+
+.todoTaskNum {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1d5fd0;
+  min-width: 18px;
+  text-align: center;
+}
+
+.todoTaskLabel {
+  flex: 1;
+  font-size: 0.74rem;
+}
+
+.todoTaskTag {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(234, 107, 74, 0.1);
+  color: #ea6b4a;
+  border: 1px solid rgba(234, 107, 74, 0.25);
+  white-space: nowrap;
+}
+
+/* 已完成任务 */
+.todoTaskCompleted {
+  opacity: 0.72;
+  background: rgba(180, 160, 130, 0.08);
+}
+
+.todoTaskCompleted .todoTaskLabel {
+  text-decoration: line-through;
+  color: rgba(78, 70, 56, 0.55);
+}
+
+.todoTaskNumDone {
+  color: #6b9c62;
+  font-weight: 700;
+}
+
+.todoTaskDoneBadge {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #5d8f55;
+  background: rgba(109, 160, 95, 0.12);
+  border: 1px solid rgba(109, 160, 95, 0.28);
+  white-space: nowrap;
+}
+
+/* 当前任务 */
+.todoTaskCurrent {
+  background: rgba(248, 245, 238, 0.85);
+  border-color: rgba(212, 168, 68, 0.4);
+}
+
+.todoTaskCurrentBadge {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #b07820;
+  background: rgba(212, 168, 68, 0.14);
+  border: 1px solid rgba(212, 168, 68, 0.32);
+  white-space: nowrap;
+}
+
+/* ================================================================
+   运营摘要四宫格卡片
+   ================================================================ */
+.todoSummaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.dashboardCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  min-height: 56px;
+  transition: all 0.15s ease;
+}
+
+.dashboardCard:hover {
+  border-color: rgba(29, 95, 208, 0.35);
+  box-shadow: 0 1px 4px rgba(29, 95, 208, 0.06);
+}
+
+.dashboardCardIcon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.dashboardCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dashboardCardValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1d5fd0;
+  line-height: 1.1;
+}
+
+.dashboardCardUnit {
+  font-size: 0.66rem;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.dashboardCardValueRisk {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ea6b4a;
+  line-height: 1.1;
+}
+
+.dashboardCardLabel {
+  font-size: 0.64rem;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+/* 风险标签行 */
+.todoRiskTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.todoRiskTag {
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  background: rgba(234, 107, 74, 0.07);
+  border: 1px solid rgba(234, 107, 74, 0.18);
+  border-radius: 3px;
+  color: #ea6b4a;
+  white-space: nowrap;
+}
+
+/* 保留旧样式兼容 */
+.todoSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+}
+
+.todoSummaryLabel {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.todoSummaryValue {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #1a2536;
+}
+
+.todoRisks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.todoRisks span {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  background: rgba(234, 107, 74, 0.07);
+  border: 1px solid rgba(234, 107, 74, 0.18);
+  border-radius: 3px;
+  color: #ea6b4a;
+}
+
+/* 下一步按钮 */
+.todoNext {
+  padding: 4px 0;
+  background: transparent;
+  margin-top: 6px;
+}
+
+.todoNextBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 18px;
+  background: linear-gradient(180deg, #ea7a1f, #d4681a);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font-family-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(234, 122, 31, 0.25);
+}
+
+.todoNextBtn:hover {
+  background: linear-gradient(180deg, #f0882a, #e0701e);
+  box-shadow: 0 3px 10px rgba(234, 122, 31, 0.35);
+  transform: translateY(-1px);
+}
+
+.todoNextBtn:active {
+  background: linear-gradient(180deg, #d4681a, #c45c16);
+  transform: translateY(0);
+}
+
+.todoNextBtnIcon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.todoNextBtnText {
+  flex: 1;
+}
+
+.todoNextBtnArrow {
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.todoNextAction {
+  font-size: 0.8rem;
+  color: #ea7a1f;
+  font-weight: 600;
+  padding: 10px 16px;
+  background: rgba(234, 122, 31, 0.06);
+  border: 1px solid rgba(234, 122, 31, 0.2);
+  border-radius: 6px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #1d5fd0;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: var(--font-family-body);
+  font-size: inherit;
+  padding: 0;
+  margin: 0 2px;
+}
+
+.linkButton:hover {
+  color: #3a7de0;
+}
+
+/* ================================================================
+   邮件 — 院内邮箱 / 内网收件箱（暖色可读版）
+   ================================================================ */
+
+/* 邮件内容区整体容器 */
+.mailContentArea {
+  padding: 8px 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #2c3a4a;
+}
+
+/* ---- 标题 + 工具栏 ---- */
+.mailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 8px 0;
+  padding: 0 4px 8px 4px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.3);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mailHeaderMain {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mailHeaderIcon {
+  font-size: 0.85rem;
+  color: #8a7a5a;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.mailHeaderTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1a2536;
+  letter-spacing: 0.02em;
+}
+
+.mailUnreadSummary {
+  font-size: 0.66rem;
+  color: #d4784a;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgba(234, 107, 74, 0.07);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.mailUnreadSummaryClear {
+  color: #5c8f5c;
+  background: rgba(92, 143, 92, 0.07);
+}
+
+/* 全部标为已读按钮 */
+.markAllReadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: rgba(180, 160, 130, 0.08);
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  color: #6b5a4a;
+  cursor: pointer;
+  font-family: var(--font-family-body);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.markAllReadIcon {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.markAllReadButton:hover {
+  background: rgba(210, 160, 100, 0.15);
+  border-color: rgba(210, 160, 100, 0.45);
+  color: #4a3520;
+}
+
+.markAllReadButton:active {
+  background: rgba(210, 160, 100, 0.2);
+}
+
+/* ---- 邮件左右分栏 ---- */
+.mailPanelWrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* ---- 左侧邮件列表面板 ---- */
+.mailListPanel {
+  width: 36%;
+  min-width: 200px;
+  max-width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mailCards {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 2px;
+}
+
+/* ---- 邮件卡片 ---- */
+.mailCard {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 11px;
+  border: 1px solid rgba(180, 160, 130, 0.22);
+  border-left: 3px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family-body);
+  transition: all 0.18s ease;
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 未读卡片 */
+.mailCardUnread {
+  background: linear-gradient(135deg, #fefcf5 0%, #fdf8ed 100%);
+  border-left-color: rgba(215, 130, 85, 0.3);
+  color: #1a2536;
+}
+
+.mailCardUnread:hover {
+  background: linear-gradient(135deg, #fef9ee 0%, #fcf4e3 100%);
+  border-color: rgba(180, 160, 130, 0.4);
+  border-left-color: rgba(215, 130, 85, 0.5);
+  box-shadow: 0 1px 3px rgba(180, 140, 100, 0.12);
+}
+
+/* 已读卡片 */
+.mailCardRead {
+  background: #faf7f0;
+  border-left-color: transparent;
+  color: #4a5a6a;
+}
+
+.mailCardRead:hover {
+  background: #f5f1e7;
+  border-color: rgba(180, 160, 130, 0.3);
+}
+
+/* 当前选中卡片 */
+.mailCardActive {
+  background: linear-gradient(135deg, #fef7e6 0%, #fcf0d8 100%);
+  border-left-color: #1d5fd0;
+  border-color: rgba(29, 95, 208, 0.2);
+  color: #1a2536;
+  box-shadow: 0 2px 8px rgba(29, 95, 208, 0.08);
+}
+
+.mailCardActive.mailCardRead {
+  background: linear-gradient(135deg, #fdf5e4 0%, #faeed2 100%);
+}
+
+/* 卡片顶部行：发件人 + 时间 */
+.mailCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.mailCardSender {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mailCardSenderName {
+  font-size: 0.68rem;
+  color: #3d5a7a;
+  font-weight: 500;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailCardSenderNameBold {
+  font-weight: 700;
+  color: #1a2536;
+}
+
+.mailCardTime {
+  font-size: 0.58rem;
+  color: #8a9aaa;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 未读红点 */
+.mailUnreadDot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  border-radius: 50%;
+  background: #e07850;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(224, 120, 80, 0.3);
+}
+
+/* 邮件主题 */
+.mailCardSubject {
+  font-size: 0.73rem;
+  color: #2c3a4a;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailCardSubjectBold {
+  font-weight: 700;
+  color: #1a2536;
+}
+
+/* 邮件预览摘要 */
+.mailCardPreview {
+  font-size: 0.64rem;
+  color: #6b7a8a;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 100%;
+}
+
+/* 卡片标签组 */
+.mailCardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 1px;
+}
+
+.mailCardTag {
+  font-size: 0.56rem;
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: rgba(210, 140, 80, 0.08);
+  border: 1px solid rgba(210, 140, 80, 0.18);
+  color: #c07030;
+  white-space: nowrap;
+}
+
+/* ---- 右侧邮件详情面板 ---- */
+.mailDetailPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 10px 16px;
+  background: #fcfaf4;
+  border: 1px solid rgba(180, 160, 130, 0.22);
+  border-radius: 5px;
+  color: #2c3a4a;
+  min-width: 0;
+}
+
+/* 详情顶部来源信息区 */
+.mailDetailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.mailDetailIdentity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mailAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(180, 160, 130, 0.2) 0%, rgba(210, 180, 140, 0.2) 100%);
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.mailDetailIdentityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mailDetailFromText {
+  font-size: 0.76rem;
+  color: #1a2536;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mailDetailSourceRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mailTypeBadge {
+  font-size: 0.6rem;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: rgba(29, 95, 208, 0.07);
+  border: 1px solid rgba(29, 95, 208, 0.18);
+  color: #1d5fd0;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* 已查阅状态标签 */
+.mailReadBadge {
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(160, 150, 130, 0.1);
+  border: 1px solid rgba(160, 150, 130, 0.22);
+  color: #8a8a7a;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.mailReadBadgeDone {
+  background: rgba(92, 143, 92, 0.08);
+  border-color: rgba(92, 143, 92, 0.2);
+  color: #5c8f5c;
+}
+
+/* 邮件标题 */
+.mailDetailTitle {
+  font-size: 0.96rem;
+  color: #1a2536;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.25);
+  line-height: 1.4;
+}
+
+/* 元信息区 */
+.mailDetailMeta {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 14px;
+  font-size: 0.66rem;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  background: rgba(180, 160, 130, 0.04);
+  border: 1px solid rgba(180, 160, 130, 0.12);
+  border-radius: 4px;
+}
+
+.mailDetailMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mailDetailMetaIcon {
+  font-size: 0.62rem;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.mailDetailMetaKey {
+  color: #8a9aaa;
+  font-weight: 500;
+  margin-right: 2px;
+}
+
+.mailDetailMetaValue {
+  color: #4a5a6a;
+  font-weight: 500;
+}
+
+.mailDetailMetaSep {
+  width: 1px;
+  height: 14px;
+  background: rgba(180, 160, 130, 0.25);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* 正文纸张面板 */
+.mailBodyPaper {
+  background: linear-gradient(180deg, #fbf7ed 0%, #f9f4e7 100%);
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 5px;
+  margin-bottom: 14px;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    0 1px 3px rgba(180, 140, 100, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 纸张顶部装饰边 */
+.mailBodyPaper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(210, 180, 140, 0.05) 0%,
+    rgba(210, 180, 140, 0.25) 20%,
+    rgba(210, 180, 140, 0.25) 80%,
+    rgba(210, 180, 140, 0.05) 100%
+  );
+}
+
+.mailBodyPaperInner {
+  padding: 18px 20px;
+}
+
+.mailBodyText {
+  font-size: 0.8rem;
+  color: #2c3a4a;
+  line-height: 1.85;
+  margin: 0;
+  text-indent: 2em;
+}
+
+/* 关联指标区 */
+.mailMetricSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  background: rgba(180, 160, 130, 0.04);
+  border: 1px solid rgba(180, 160, 130, 0.12);
+  border-radius: 4px;
+}
+
+.mailMetricIcon {
+  font-size: 0.62rem;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.mailMetricLabel {
+  font-size: 0.66rem;
+  color: #6b7a8a;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mailMetricTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mailMetricTag {
+  font-size: 0.64rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(210, 140, 80, 0.08);
+  border: 1px solid rgba(210, 140, 80, 0.2);
+  color: #c07030;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* 小屏邮件适配 */
+@media (max-width: 640px) {
+  .mailPanelWrapper {
+    flex-direction: column;
+  }
+  .mailListPanel {
+    width: 100%;
+    max-width: none;
+    max-height: 150px;
+  }
+  .mailCards {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 4px;
+  }
+  .mailCard {
+    flex-shrink: 0;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    min-width: 150px;
+  }
+  .mailCardActive {
+    border-left: none;
+    border-bottom-color: #1d5fd0;
+  }
+  .mailDetailPanel {
+    padding: 8px 12px;
+  }
+}
+
+/* ================================================================
+   运营报表 — 月度运营诊断（暖色可读版）
+   ================================================================ */
+.reportSubtitle {
+  font-size: 0.74rem;
+  color: #5c6b7e;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.reportTable {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #fffdf9;
+}
+
+.reportHeader {
+  display: grid;
+  grid-template-columns: 1.8fr 0.8fr 0.9fr 3fr;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(180, 160, 130, 0.12);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #3d5a7a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reportRow {
+  display: grid;
+  grid-template-columns: 1.8fr 0.8fr 0.9fr 3fr;
+  gap: 4px;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(180, 160, 130, 0.2);
+  font-size: 0.76rem;
+  align-items: center;
+}
+
+.reportCol {
+  display: flex;
+  align-items: center;
+  color: #2c3a4a;
+}
+
+.reportValue {
+  font-weight: 700;
+  color: #1a2536 !important;
+  font-size: 0.84rem;
+}
+
+.reportLevel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.reportLevelDanger {
+  color: #c8786a;
+  background: rgba(200, 120, 106, 0.1);
+}
+
+.reportLevelWarn {
+  color: #c9a440;
+  background: rgba(201, 164, 64, 0.1);
+}
+
+.reportLevelGood {
+  color: #7a9a6a;
+  background: rgba(122, 154, 106, 0.1);
+}
+
+.reportTrend {
+  font-size: 0.7rem;
+  color: #5c6b7e !important;
+}
+
+.reportDiagnosis {
+  padding: 10px 14px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.reportDiagnosisTitle {
+  font-size: 0.74rem;
+  color: #ea7a1f;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.2);
+}
+
+.reportDiagnosisItem {
+  font-size: 0.76rem;
+  color: #2c3a4a;
+  line-height: 1.65;
+  margin: 0 0 5px 0;
+  padding-left: 14px;
+  position: relative;
+}
+
+.reportDiagnosisItem::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: #ea7a1f;
+}
+
+/* ================================================================
+   监控面板 — 院内监控中心（暖色可读版）
+   ================================================================ */
+.monitorPanel {
+  padding: 10px 14px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #2c3a4a;
+}
+
+.monitorPanel .sectionTitle {
+  color: #1a2536;
+}
+
+.monitorHint {
+  font-size: 0.7rem;
+  color: #5c6b7e;
+  margin: 0 0 10px 0;
+}
+
+.monitorMainLayout {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.monitorMainView {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.monitorMainFrame {
+  flex: 1;
+  position: relative;
+  background: #111;
+  border: 1px solid rgba(100, 100, 100, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.monitorMainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.72) saturate(0.75) blur(0.3px);
+  opacity: 0.88;
+}
+
+.monitorMainOverlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.monitorMainCamId {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #eee;
+  border-radius: 2px;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.monitorMainStatus {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  background: rgba(200, 120, 106, 0.2);
+  color: #c8786a;
+  border-radius: 2px;
+  border: 1px solid rgba(200, 120, 106, 0.4);
+  font-weight: 600;
+}
+
+.monitorMainRiskLabel {
+  font-size: 0.62rem;
+  padding: 2px 6px;
+  background: rgba(234, 122, 31, 0.12);
+  border: 1px solid rgba(234, 122, 31, 0.3);
+  color: #ea7a1f;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.monitorObservationCard {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  color: #2c3a4a;
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.monitorObservationTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1a2536;
+  margin: 0 0 4px 0;
+}
+
+.monitorObservationText {
+  font-size: 0.76rem;
+  color: #2c3a4a;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.monitorMainLabel {
+  font-size: 0.76rem;
+  color: #2c3a4a;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  line-height: 1.55;
+}
+
+.monitorSideList {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.monitorSideCard {
+  padding: 8px 10px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.monitorSideCard:hover {
+  background: #fef8ed;
+  border-color: rgba(180, 160, 130, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.monitorSideCardActive {
+  background: #fef8ed;
+  border-color: rgba(29, 95, 208, 0.3);
+  border-left: 3px solid #1d5fd0;
+  box-shadow: 0 1px 4px rgba(29, 95, 208, 0.08);
+}
+
+.monitorSideThumbWrap {
+  width: 42px;
+  height: 30px;
+  flex-shrink: 0;
+  background: #1a1a1a;
+  border: 1px solid rgba(100, 100, 100, 0.4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.monitorSideThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.55) saturate(0.65);
+  opacity: 0.85;
+}
+
+.monitorSideInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.monitorSideId {
+  font-size: 0.66rem;
+  color: #3d5a7a;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.monitorSideName {
+  font-size: 0.74rem;
+  color: #1a2536;
+  font-weight: 600;
+}
+
+.monitorSideNote {
+  font-size: 0.66rem;
+  color: #c8786a;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.monitorSideRiskTag {
+  font-size: 0.58rem;
+  padding: 1px 4px;
+  background: rgba(234, 122, 31, 0.08);
+  border: 1px solid rgba(234, 122, 31, 0.2);
+  border-radius: 2px;
+  color: #ea7a1f;
+  white-space: nowrap;
+}
+
+.monitorSummaryFooter {
+  padding: 8px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: #2c3a4a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.monitorSummaryFooterLabel {
+  font-weight: 700;
+  color: #1a2536;
+}
+
+.monitorRiskTag {
+  font-size: 0.64rem;
+  padding: 2px 6px;
+  background: rgba(223, 128, 106, 0.08);
+  border: 1px solid rgba(223, 128, 106, 0.22);
+  border-radius: 3px;
+  color: #c8786a;
+  font-weight: 500;
+}
+
+.monitorBudgetHint {
+  font-size: 0.68rem;
+  color: #5c6b7e;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* 小屏监控适配 */
+@media (max-width: 640px) {
+  .monitorMainLayout {
+    flex-direction: column;
+  }
+  .monitorSideList {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .monitorSideCard {
+    flex-shrink: 0;
+    min-width: 120px;
+  }
+}
+
+/* ================================================================
+   系统通知 — 系统日志 / 风险记录（暖色可读版）
+   ================================================================ */
+.notificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notificationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationItem:hover {
+  background: #fef8ed;
+}
+
+.notificationTag {
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.notificationTagTypeFlow {
+  background: #c9a440;
+}
+
+.notificationTagTypeRisk {
+  background: #c8786a;
+}
+
+.notificationTagTypeEvent {
+  background: #5a8a94;
+}
+
+.notificationTagTypeUrgent {
+  background: #ea6b4a;
+}
+
+.notificationContent {
+  font-size: 0.76rem;
+  color: #2c3a4a;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.notificationTime {
+  font-size: 0.62rem;
+  color: #5c6b7e;
+  margin-left: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   公告板
+   ================================================================ */
+/* ================================================================
+   公告板聚焦层（放大查看模式 - 木框软木板）
+   ================================================================ */
+.bulletinFocusOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.bulletinFocusBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 20, 10, 0.48);
+  backdrop-filter: blur(3px);
+}
+
+/* 公告板整体容器 */
+.bulletinFocusBoard {
+  position: relative;
+  z-index: 1;
+  width: 88%;
+  max-width: 780px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.35s ease;
+}
+
+/* ── 木框 + 软木板 ── */
+.bulletinWoodFrame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* 木质边框底色 */
+  background: linear-gradient(
+    135deg,
+    #7B5A10 0%,
+    #9B7328 20%,
+    #7B5A10 40%,
+    #A07828 60%,
+    #7B5A10 80%,
+    #9B7328 100%
+  );
+  border: 14px solid;
+  border-image: linear-gradient(
+    180deg,
+    #5A3E0A 0%,
+    #8B6914 20%,
+    #6B4E0E 40%,
+    #9B7328 60%,
+    #6B4E0E 80%,
+    #8B6914 100%
+  ) 1;
+  border-radius: 4px;
+  box-shadow:
+    0 10px 36px rgba(0, 0, 0, 0.38),
+    inset 0 1px 3px rgba(255, 255, 255, 0.08),
+    3px 3px 0 rgba(62, 44, 28, 0.2);
+}
+
+/* 公告板标题栏 */
+.bulletinBoardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.14) 0%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.bulletinHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bulletinBoardIcon {
+  font-size: 1.3rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.bulletinBoardTitle {
+  font-family: var(--font-family-title);
+  font-size: 1.15rem;
+  color: #FFF8E7;
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.bulletinCloseButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  color: #FFF8E7;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  font-family: var(--font-family-body);
+}
+
+.bulletinCloseButton:hover {
+  background: rgba(181, 101, 90, 0.5);
+  border-color: rgba(211, 47, 47, 0.45);
+}
+
+/* ── 软木板核心区 ── */
+.bulletinCorkArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 26px;
+  /* 软木板纹理 */
+  background-color: #C4A265;
+  background-image:
+    /* 软木细颗粒 */
+    radial-gradient(circle at 18% 25%, rgba(139, 105, 20, 0.28) 0%, transparent 3%),
+    radial-gradient(circle at 55% 12%, rgba(139, 105, 20, 0.2) 0%, transparent 2.5%),
+    radial-gradient(circle at 78% 48%, rgba(139, 105, 20, 0.3) 0%, transparent 4%),
+    radial-gradient(circle at 12% 68%, rgba(139, 105, 20, 0.22) 0%, transparent 3%),
+    radial-gradient(circle at 48% 78%, rgba(139, 105, 20, 0.26) 0%, transparent 2.5%),
+    radial-gradient(circle at 88% 82%, rgba(139, 105, 20, 0.2) 0%, transparent 3.5%),
+    /* 软木横向纹理 */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(139, 105, 20, 0.07) 3px,
+      rgba(139, 105, 20, 0.07) 4px
+    ),
+    /* 软木竖向纹理 */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 9px,
+      rgba(139, 105, 20, 0.04) 9px,
+      rgba(139, 105, 20, 0.04) 10px
+    );
+  /* 网格排布便签 */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  gap: 16px 20px;
+  align-content: start;
+}
+
+/* ── 单张贴纸 / 便签 ── */
+.bulletinPinnedNote {
+  position: relative;
+  padding: 14px 12px 12px;
+  border-radius: 2px 2px 6px 6px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 96px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.bulletinPinnedNote:hover {
+  transform: scale(1.04) !important;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.22),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+/* 图钉装饰 */
+.bulletinPin {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #F0D060, #8B6914);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  z-index: 3;
+}
+
+.bulletinPin::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 便签内容 */
+.bulletinNoteIcon {
+  font-size: 1.4rem;
+  align-self: flex-start;
+}
+
+.bulletinNoteTitle {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #2E1C0C;
+  line-height: 1.45;
+  font-family: var(--font-family-body);
+}
+
+.bulletinNoteDesc {
+  font-size: 0.72rem;
+  color: #6B5344;
+  line-height: 1.35;
+  font-family: var(--font-family-body);
+}
+
+/* ============ 不同纸张样式 ============ */
+
+/* 预算摘要 — 米白正式纸 */
+.bulletinNote_budget {
+  background: linear-gradient(175deg, #FDF8EC 0%, #F5ECD7 100%);
+  border: 1px solid #D4C4A0;
+}
+
+/* 检查通知 — 淡蓝白官方通知单 */
+.bulletinNote_check {
+  background: linear-gradient(175deg, #F0F4FA 0%, #E4ECF5 100%);
+  border: 1px solid #C4D0E0;
+}
+
+/* 警示便签 — 黄色醒目贴纸 */
+.bulletinNote_warning {
+  background: linear-gradient(175deg, #FFF8D2 0%, #FEF0B0 100%);
+  border: 1px solid #E8D47E;
+}
+
+/* 活动安排 — 浅粉/浅橙便签 */
+.bulletinNote_activity {
+  background: linear-gradient(175deg, #FFF2EE 0%, #FDE4DC 100%);
+  border: 1px solid #E8C8C0;
+}
+
+/* 维修清单 — 浅灰绿 */
+.bulletinNote_repair {
+  background: linear-gradient(175deg, #F4F7F0 0%, #E8EDE2 100%);
+  border: 1px solid #C8D4B8;
+}
+
+/* 家属反馈 — 浅紫便签 */
+.bulletinNote_family {
+  background: linear-gradient(175deg, #F8F2FA 0%, #EDE2F2 100%);
+  border: 1px solid #D4C4E0;
+}
+
+/* 动态事件便签 — 带暖色左边框标记 */
+.bulletinNote_event {
+  background: linear-gradient(175deg, #FFF9F0 0%, #FEF0E0 100%);
+  border: 1px solid #E8C8A0;
+  border-left: 3px solid var(--color-accent-warm);
+}
+
+/* 新便签入场动画 */
+.bulletinNoteNew {
+  animation: fadeInUp 0.5s ease both;
+}
+
+/* ── 底部关闭按钮 ── */
+.bulletinCloseBtn {
+  margin-top: 10px;
+  padding: 10px 32px;
+  background: rgba(139, 105, 20, 0.88);
+  color: #FFF8E7;
+  border: 1px solid rgba(90, 62, 10, 0.45);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  align-self: center;
+}
+
+.bulletinCloseBtn:hover {
+  background: #6B4E0E;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* ── 响应式：窄屏时两列 ── */
+@media (max-width: 600px) {
+  .bulletinCorkArea {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 14px 14px;
+    gap: 12px 14px;
+  }
+
+  .bulletinFocusBoard {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .bulletinWoodFrame {
+    border-width: 10px;
+  }
+}
+
+/* ================================================================
+   预算审批面板（暖色可读版）
+   ================================================================ */
+.budgetPanel {
+  padding: 10px 14px;
+  color: #2c3a4a;
+}
+
+.budgetPanel .sectionTitle {
+  color: #1a2536;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.3);
+  text-align: left;
+}
+
+/* 预算提交阻止 */
+.submitBlocked {
+  padding: 6px 10px;
+  background: rgba(223, 128, 106, 0.08);
+  border: 1px solid rgba(223, 128, 106, 0.2);
+  border-radius: 2px;
+}
+
+.submitBlockedText {
+  font-size: 0.72rem;
+  color: #c8786a;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* 空缺方案 */
+.emptySubmitSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.emptySubmitWarning {
+  font-size: 0.78rem;
+  color: #c8786a;
+  margin: 0;
+  text-align: center;
+  padding: 8px 12px;
+  background: rgba(200, 120, 106, 0.08);
+  border: 1px solid rgba(200, 120, 106, 0.25);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* 锁定选项 */
+.choiceLocked {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+  border-color: rgba(168, 152, 136, 0.3) !important;
+  background: rgba(168, 152, 136, 0.05) !important;
+}
+
+.choiceLocked:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.lockedBadge {
+  font-size: 0.65rem;
+  color: var(--color-disabled);
+  border: 1px solid var(--color-disabled);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.lockedReason {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.68rem;
+  color: var(--color-disabled);
+  font-style: italic;
+}
+
+/* ================================================================
+   阶段过渡（预留）
+   ================================================================ */
+.phaseTransition {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.phaseTransitionText {
+  font-size: 1.2rem;
+  color: rgba(200, 210, 230, 0.9);
+  animation: fadeIn 0.5s ease;
+}
+
+/* ================================================================
+   通用动画
+   ================================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ================================================================
+   预算审批 MVP 样式
+   ================================================================ */
+.gameContent {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding-bottom: var(--spacing-xl);
+}
+
+/* === 天平 === */
+.balanceSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.balanceScale {
+  margin: 4px 0;
+}
+
+.scaleSvg {
+  width: 260px;
+  height: 160px;
+}
+
+.scaleBeam {
+  transition: transform var(--transition-normal);
+}
+
+.tiltHint {
+  display: flex;
+  justify-content: space-between;
+  width: 260px;
+  font-size: 0.76rem;
+  color: #3d5a7a;
+  padding: 0 8px;
+  font-weight: 600;
+}
+
+.tiltLabelLeft {
+  color: #7a9a6a;
+}
+
+.tiltLabelRight {
+  color: #c8786a;
+}
+
+.scaleHint {
+  font-size: 0.76rem;
+  color: #2c3a4a;
+  font-style: italic;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* === 预算条 === */
+.budgetBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+}
+
+.budgetLabel {
+  font-size: 0.82rem;
+  color: #2c3a4a;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.budgetTrack {
+  flex: 1;
+  height: 8px;
+  background: rgba(180, 160, 130, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.budgetFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ea7a1f, #f0a050);
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+.budgetText {
+  font-size: 0.82rem;
+  color: #1a2536;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* === 预算不足提示 === */
+.budgetWarning {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(200, 120, 106, 0.08);
+  border: 1px solid rgba(200, 120, 106, 0.3);
+  border-radius: 4px;
+  color: #c8786a;
+  font-size: 0.78rem;
+  text-align: center;
+  font-weight: 600;
+  animation: fadeInUp 0.3s ease;
+}
+
+/* === 指标 === */
+.indicators {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+}
+
+.sectionTitle {
+  font-size: 0.88rem;
+  color: #1a2536;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  text-align: left;
+}
+
+.indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.indicatorHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.indicatorIcon {
+  font-size: 0.85rem;
+}
+
+.indicatorName {
+  font-size: 0.78rem;
+  color: #3d5a7a;
+  flex: 1;
+  font-weight: 500;
+}
+
+.indicatorValue {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a2536;
+}
+
+.deltaUp {
+  font-size: 0.68rem;
+  color: #7a9a6a;
+  margin-left: 4px;
+}
+
+.deltaDown {
+  font-size: 0.68rem;
+  color: #c8786a;
+  margin-left: 4px;
+}
+
+.indicatorTrack {
+  height: 5px;
+  background: rgba(180, 160, 130, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.indicatorFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all var(--transition-normal);
+}
+
+/* === 旁白气泡 === */
+.narrativeBubble {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(201, 164, 64, 0.06);
+  border-left: 3px solid #c9a440;
+  border-radius: 4px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.narrativeText {
+  font-size: 0.82rem;
+  color: #2c3a4a;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* === 选项 === */
+.choices {
+  width: 100%;
+}
+
+.choicesHint {
+  font-size: 0.74rem;
+  color: #3d5a7a;
+  text-align: left;
+  margin: 0 0 6px 0;
+  font-weight: 500;
+}
+
+.choicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.choiceCard {
+  padding: 10px 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  min-height: var(--touch-target-min);
+  color: #2c3a4a;
+  font-family: var(--font-family-body);
+}
+
+.choiceCard:hover:not(.insufficient):not(.choiceLocked) {
+  border-color: #c9a440;
+  background: #fef8ed;
+  box-shadow: 0 1px 4px rgba(201, 164, 64, 0.08);
+}
+
+.choiceCard:active:not(.insufficient):not(.choiceLocked) {
+  background: #fef0d5;
+}
+
+.choiceCard.selected {
+  border-color: #7a9a6a;
+  background: rgba(122, 154, 106, 0.06);
+  box-shadow: 0 1px 4px rgba(122, 154, 106, 0.08);
+}
+
+.choiceCard.selected:hover {
+  border-color: #c8786a;
+  background: rgba(200, 120, 106, 0.06);
+}
+
+.choiceCard.insufficient {
+  border-color: rgba(180, 160, 130, 0.3);
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: rgba(180, 160, 130, 0.08);
+}
+
+.choiceHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.undoBadge {
+  font-size: 0.64rem;
+  color: #5c6b7e;
+  background: rgba(180, 160, 130, 0.12);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.insufficientBadge {
+  font-size: 0.64rem;
+  color: #c8786a;
+  border: 1px solid rgba(200, 120, 106, 0.35);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.choiceTitle {
+  font-size: 0.88rem;
+  color: #1a2536;
+  margin: 0;
+  font-weight: 700;
+}
+
+.choiceDesc {
+  font-size: 0.76rem;
+  color: #3d5a7a;
+  margin: 4px 0;
+  line-height: 1.5;
+}
+
+.choiceCost {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #c9a440;
+}
+
+.saving {
+  color: #7a9a6a;
+}
+
+/* 效果预览 */
+.effectsPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(180, 160, 130, 0.2);
+}
+
+.effectUp {
+  font-size: 0.68rem;
+  color: #7a9a6a;
+  font-weight: 600;
+}
+
+.effectDown {
+  font-size: 0.68rem;
+  color: #c8786a;
+  font-weight: 600;
+}
+
+/* === 操作按钮区 === */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.submitBtn {
+  padding: 10px 28px;
+  background: linear-gradient(180deg, #ea7a1f, #d4681a);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-target-min);
+  width: 100%;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(234, 122, 31, 0.25);
+}
+
+.submitBtn:hover {
+  background: linear-gradient(180deg, #f0882a, #e0701e);
+  box-shadow: 0 3px 10px rgba(234, 122, 31, 0.35);
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.submitBtn:disabled:hover {
+  background: linear-gradient(180deg, #ea7a1f, #d4681a);
+  transform: none;
+  box-shadow: 0 2px 6px rgba(234, 122, 31, 0.25);
+}
+
+/* === 决策总结面板 === */
+.summaryPanel {
+  width: 100%;
+  padding: 16px;
+  background: #fffdf9;
+  border: 1px solid #c9a440;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.summaryTitle {
+  font-size: 1.05rem;
+  color: #1a2536;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(180, 160, 130, 0.3);
+  font-weight: 700;
+}
+
+.summarySection {
+  padding: 0;
+}
+
+.summaryLabel {
+  font-size: 0.72rem;
+  color: #3d5a7a;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.summaryValue {
+  font-size: 0.9rem;
+  color: #c9a440;
+  font-weight: 700;
+  margin: 0;
+}
+
+.summaryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.summaryList li {
+  font-size: 0.82rem;
+  color: #2c3a4a;
+  padding-left: 14px;
+  position: relative;
+}
+
+.summaryList li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: #c9a440;
+}
+
+.summaryEmpty {
+  color: #888d98 !important;
+  font-style: italic;
+}
+
+.summaryHighlight {
+  font-size: 0.88rem;
+  color: #7a9a6a;
+  font-weight: 600;
+  margin: 0;
+}
+
+.summaryDim {
+  font-size: 0.88rem;
+  color: #c8786a;
+  font-weight: 600;
+  margin: 0;
+}
+
+.summaryConclusion {
+  font-size: 0.82rem;
+  color: #2c3a4a;
+  line-height: 1.65;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(201, 164, 64, 0.05);
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.summaryConfirmBtn {
+  padding: 10px 28px;
+  background: linear-gradient(180deg, #ea7a1f, #d4681a);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-target-min);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(234, 122, 31, 0.25);
+}
+
+.summaryConfirmBtn:hover {
+  background: linear-gradient(180deg, #f0882a, #e0701e);
+  box-shadow: 0 3px 10px rgba(234, 122, 31, 0.35);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === 事件反馈 === */
+.feedbackSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.feedbackIntro {
+  font-size: 0.78rem;
+  color: #3d5a7a;
+  margin: 0;
+  font-style: italic;
+}
+
+.feedbackList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedbackCard {
+  padding: 12px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.25);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: fadeInUp 0.4s ease;
+}
+
+.feedbackCard.feedbackPositive {
+  border-color: rgba(122, 154, 106, 0.4);
+  background: rgba(122, 154, 106, 0.06);
+}
+
+.feedbackCard.feedbackWarning {
+  border-color: rgba(200, 120, 106, 0.4);
+  background: rgba(200, 120, 106, 0.06);
+}
+
+.feedbackCard.feedbackMixed {
+  border-color: rgba(201, 164, 64, 0.35);
+  background: rgba(201, 164, 64, 0.06);
+}
+
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feedbackSource {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.feedbackPositive .feedbackSource {
+  background: rgba(122, 154, 106, 0.15);
+  color: #7a9a6a;
+}
+
+.feedbackWarning .feedbackSource {
+  background: rgba(200, 120, 106, 0.15);
+  color: #c8786a;
+}
+
+.feedbackMixed .feedbackSource {
+  background: rgba(201, 164, 64, 0.15);
+  color: #c9a440;
+}
+
+.feedbackToneBadge {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.feedbackTitle {
+  font-size: 0.88rem;
+  color: #1a2536;
+  margin: 0;
+  font-weight: 700;
+}
+
+.feedbackDesc {
+  font-size: 0.78rem;
+  color: #2c3a4a;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.feedbackActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.feedbackActions .summaryConfirmBtn {
+  flex: 1;
+  width: auto;
+  margin-top: 0;
+}
+
+.feedbackBackBtn {
+  flex: 1;
+  padding: 10px 16px;
+  background: none;
+  color: #3d5a7a;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: var(--touch-target-min);
+}
+
+.feedbackBackBtn:hover {
+  border-color: #c9a440;
+  color: #c9a440;
+  background: rgba(201, 164, 64, 0.05);
+}
+
+/* ================================================================
+   响应式
+   ================================================================ */
+@media (max-width: 900px) {
+  .computerRightSidebar {
+    width: 150px;
+  }
+  .computerSidebar {
+    width: 110px;
+  }
+
+  .finalReportPanel {
+    padding: 24px 20px;
+    margin: 0 8px;
+  }
+
+  .finalReportQuadGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .eventCallPanel {
+    max-width: 92vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .computerScreen {
+    width: 96%;
+    height: 94vh;
+    max-height: none;
+    border-radius: 2px;
+  }
+
+  .computerSidebar {
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .computerRightSidebar {
+    width: 130px;
+  }
+
+  .sidebarItem {
+    padding: 7px 6px;
+    font-size: 0.68rem;
+    gap: 3px;
+  }
+
+  .sidebarItemIcon {
+    font-size: 0.75rem;
+  }
+
+  .sidebarItemLabel {
+    font-size: 0.62rem;
+  }
+
+  .hotspotTooltip {
+    padding: 6px 10px;
+    gap: 5px;
+  }
+
+  .hotspotTooltipIcon {
+    font-size: 0.95rem;
+  }
+
+  .hotspotTooltipTitle {
+    font-size: 0.7rem;
+  }
+
+  .hotspotTooltipSub {
+    font-size: 0.62rem;
+  }
+
+  .statusBar {
+    padding: 3px 8px;
+    gap: 8px;
+  }
+
+  .statusItem {
+    font-size: 0.6rem;
+  }
+
+  .statusLabel {
+    font-size: 0.58rem;
+  }
+
+  .statusValue {
+    font-size: 0.62rem;
+  }
+
+  .reportTable {
+    font-size: 0.68rem;
+  }
+
+  .reportHeader,
+  .reportRow {
+    grid-template-columns: 1.5fr 0.8fr 0.8fr 2fr;
+  }
+
+  .todoSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .computerTitleSub {
+    display: none;
+  }
+
+  /* 电脑聚焦视图 — 平板适配 */
+  .monitorDevice {
+    width: min(88vw, 700px);
+  }
+
+  .monitorBezel {
+    border-radius: 6px;
+    padding: 8px 10px 10px;
+  }
+
+  .monitorScreen {
+    border-radius: 4px;
+  }
+
+  .keyboardDevice {
+    max-width: min(68vw, 500px);
+  }
+
+  .mouseDevice {
+    width: clamp(24px, 4vw, 40px);
+    height: clamp(40px, 6vw, 70px);
+  }
+
+  .deskPeripherals {
+    gap: clamp(8px, 2vw, 16px);
+    width: min(92vw, 700px);
+  }
+
+  .computerEmbedded .computerSidebar {
+    width: clamp(72px, 15vw, 100px);
+  }
+
+  .computerEmbedded .computerRightSidebar {
+    width: clamp(100px, 17vw, 140px);
+  }
+}
+
+@media (max-width: 640px) {
+  .computerBody {
+    flex-direction: column;
+  }
+
+  .computerSidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    max-height: 42px;
+    border-right: none;
+    border-bottom: 1px solid #444a56;
+  }
+
+  .sidebarItem {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 6px 8px;
+  }
+
+  .sidebarItemActive {
+    border-left: none;
+    border-bottom-color: #5a8a94;
+  }
+
+  .computerRightSidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: hidden;
+    overflow-x: auto;
+    max-height: 80px;
+    border-left: none;
+    border-top: 1px solid #444a56;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .rightSidebarSection {
+    border-bottom: none;
+    padding: 4px 6px;
+    flex-shrink: 0;
+  }
+
+  .rightSidebarTitle {
+    display: none;
+  }
+
+  .computerContent {
+    flex: 1;
+    min-height: 300px;
+  }
+
+  .computerTitleSub {
+    display: none;
+  }
+
+  .finalReportQuadGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finalReportPanel {
+    padding: 20px 14px;
+    border-radius: 10px;
+  }
+
+  .familyCallPanel {
+    margin: 0 12px;
+    max-width: 95vw;
+  }
+
+  .nightEndingContent {
+    padding: 24px 16px;
+  }
+
+  .nightEndingLine {
+    font-size: 0.92rem;
+  }
+
+  .choicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 电脑聚焦视图 — 手机适配 */
+  .computerFocusView {
+    align-items: flex-start;
+    padding-top: 4vh;
+  }
+
+  .monitorDevice {
+    width: min(94vw, 500px);
+  }
+
+  .monitorBezel {
+    border-radius: 4px;
+    padding: 5px 6px 7px;
+  }
+
+  .monitorScreen {
+    border-radius: 3px;
+  }
+
+  .monitorStand {
+    width: clamp(24px, 8vw, 48px);
+    height: clamp(14px, 3vh, 28px);
+  }
+
+  .monitorBase {
+    width: clamp(90px, 30vw, 180px);
+    height: clamp(5px, 1vw, 10px);
+  }
+
+  .keyboardDevice {
+    max-width: min(82vw, 380px);
+  }
+
+  .keyboardBody {
+    aspect-ratio: 4.2 / 1;
+    padding: 3px 4px;
+    gap: 2px;
+    border-radius: 4px;
+  }
+
+  .mouseDevice {
+    width: clamp(20px, 5vw, 36px);
+    height: clamp(34px, 7vw, 60px);
+  }
+
+  .deskPeripherals {
+    gap: clamp(6px, 1.5vw, 10px);
+    width: min(96vw, 500px);
+  }
+
+  .computerEmbedded .computerSidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    max-height: 34px;
+    border-right: none;
+    border-bottom: 1px solid rgba(100, 120, 150, 0.12);
+  }
+
+  .computerEmbedded .sidebarItem {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 4px 6px;
+  }
+
+  .computerEmbedded .sidebarItemActive {
+    border-left: none;
+    border-bottom-color: #6a9aa4;
+  }
+
+  .computerEmbedded .computerRightSidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: hidden;
+    overflow-x: auto;
+    max-height: 64px;
+    border-left: none;
+    border-top: 1px solid rgba(100, 120, 150, 0.12);
+    padding: 3px 5px;
+    gap: 2px;
+  }
+
+  .computerEmbedded .computerContent {
+    flex: 1;
+    min-height: 240px;
+  }
+
+  .computerEmbedded .computerTitleDate,
+  .computerEmbedded .computerTitleStatus {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .computerScreen {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .computerSidebar {
+    width: 100%;
+    max-height: 38px;
+  }
+
+  .sidebarItem {
+    padding: 5px 6px;
+    font-size: 0.62rem;
+  }
+
+  .sidebarItemLabel {
+    font-size: 0.6rem;
+  }
+
+  .choicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .monitorGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .todoSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 小屏微调热点区域 */
+  .hotspotAreaComputer {
+    left: 38%;
+    top: 44%;
+    width: 24%;
+    height: 22%;
+  }
+
+  .hotspotAreaPhone {
+    left: 6%;
+    top: 63%;
+    width: 18%;
+    height: 22%;
+  }
+
+  .hotspotAreaBulletin {
+    left: 6%;
+    top: 6%;
+    width: 36%;
+    height: 36%;
+  }
+
+  .chapterLabel {
+    top: 4px;
+    left: 6px;
+    padding: 2px 8px;
+  }
+
+  .chapterLabelText {
+    font-size: 0.6rem;
+  }
+
+  .chapterLabelIcon {
+    font-size: 0.7rem;
+  }
+
+  /* 小屏下气泡显示在场景上方/下方 */
+  .hotspotAreaComputer .hotspotTooltip,
+  .screenHotspot .hotspotTooltip,
+  .powerButtonHotspot .hotspotTooltip {
+    bottom: 108%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hotspotAreaPhone .hotspotTooltip {
+    top: -120%;
+    left: -20%;
+  }
+
+  .hotspotAreaBulletin .hotspotTooltip {
+    top: 108%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================ */
+/* 电话响铃动画（场景集成版）                   */
+/* ============================================ */
+
+/* ============================================ */
+/* 工作突发事件面板                            */
+/* ============================================ */
+
+.eventCallOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(20, 18, 15, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.eventCallPanel {
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.eventCallHeader {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.eventCallTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.eventSeverityBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.severityLow {
+  background: rgba(107, 142, 78, 0.15);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.severityMedium {
+  background: rgba(255, 149, 0, 0.15);
+  color: var(--color-accent-warm);
+  border: 1px solid var(--color-accent-warm);
+}
+
+.severityHigh {
+  background: rgba(211, 47, 47, 0.15);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.eventSeverityTag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.eventCallBody {
+  padding: 20px 24px;
+}
+
+.eventName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 12px;
+}
+
+.eventDescription {
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+  margin: 0 0 16px;
+}
+
+.eventIndicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.eventIndicatorTag {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(139, 105, 20, 0.1);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.eventBudgetHint {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 16px;
+}
+
+.eventOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eventOptionsHint {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.eventOptionCard {
+  text-align: left;
+  padding: 16px;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eventOptionCard:hover:not(:disabled) {
+  border-color: var(--color-accent-warm);
+  background: rgba(139, 105, 20, 0.06);
+}
+
+.eventOptionCard:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.eventOptionDisabled {
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.eventOptionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.eventOptionLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.eventOptionCost {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(139, 105, 20, 0.12);
+  color: var(--color-accent-warm);
+  font-weight: 600;
+}
+
+.eventOptionDesc {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.eventOptionEffects {
+  background: rgba(139, 105, 20, 0.05);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eventEffectRow {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.eventEffectLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  min-width: 70px;
+}
+
+.eventEffectText {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.eventEffectDeltas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.eventOptionWarning {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  color: var(--color-danger);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* 事件处理轻反馈 */
+.eventResolvedOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(20, 18, 15, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease;
+}
+
+.eventResolvedToast {
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-accent-warm);
+  border-radius: 16px;
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 420px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s ease;
+}
+
+.eventResolvedIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.eventResolvedTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+}
+
+.eventResolvedNote {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.eventResolvedBtn {
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-accent-warm);
+  color: var(--color-bg-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.eventResolvedBtn:hover {
+  background: var(--color-accent-dark);
+}
+
+/* ============================================ */
+/* 电话对话面板 — PhoneDialogPanel            */
+/* ============================================ */
+
+.phoneDialogueOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 20px 28px;
+  animation: fadeIn 0.35s ease;
+}
+
+/* 半透明暗化遮罩 */
+.phoneDialogueBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 24, 18, 0.38);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* 对话框舞台（底部居中） */
+.phoneDialogueStage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 头部条：暖米色标题栏（代替原来的黑色标题栏） */
+.phoneDialogueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #efe0c2;
+  border-radius: 14px 14px 0 0;
+  border: 1px solid rgba(174, 134, 74, 0.35);
+  border-bottom: none;
+  backdrop-filter: blur(4px);
+}
+
+.phoneCallerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phoneCallerName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #3e2c1c;
+}
+
+.phoneCallerRole {
+  font-size: 0.75rem;
+  color: rgba(62, 44, 28, 0.55);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(62, 44, 28, 0.06);
+  border: 1px solid rgba(62, 44, 28, 0.10);
+}
+
+/* 风险标签（保留样式但不展示） */
+.phoneRiskBadge {
+  display: none;
+}
+
+.phoneEventCounter {
+  font-size: 0.8rem;
+  color: rgba(245, 230, 200, 0.5);
+  font-weight: 600;
+}
+
+/* 对话框主体 */
+.phoneDialogueBox {
+  background: #f6ead0;
+  border: 1px solid rgba(174, 134, 74, 0.30);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  padding: 28px 28px 24px;
+  min-height: 100px;
+  box-shadow: 0 4px 20px rgba(62, 44, 28, 0.12);
+  cursor: default;
+}
+
+/* 来电人对话文字 */
+.phoneDialogueText {
+  font-size: 1.1rem;
+  color: #3e2c1c;
+  line-height: 1.85;
+  margin: 0;
+  min-height: 1.85em;
+}
+
+/* 旁白文字（斜体、稍浅） */
+.phoneNarrationText {
+  font-size: 1rem;
+  color: #6b5344;
+  line-height: 1.85;
+  font-style: italic;
+  margin: 0;
+  border-left: 3px solid rgba(174, 134, 74, 0.45);
+  padding-left: 14px;
+  min-height: 1.85em;
+}
+
+/* 来电人/旁白标签行 */
+.phoneSpeakerLabel {
+  font-size: 0.78rem;
+  color: rgba(123, 90, 16, 0.65);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.phoneSpeakerLabelNarration {
+  font-size: 0.78rem;
+  color: rgba(107, 83, 68, 0.55);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* 打字机光标闪烁 */
+.phoneTypewriterCursor {
+  display: inline;
+  color: rgba(123, 90, 16, 0.6);
+  font-weight: 400;
+  animation: phoneCursorBlink 0.8s step-end infinite;
+}
+
+@keyframes phoneCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 底部操作区 */
+.phoneDialogueActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 20px 4px;
+}
+
+/* 院长回应按钮（新） */
+.phoneReplyButton {
+  padding: 10px 32px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(174, 134, 74, 0.5);
+  background: rgba(246, 234, 208, 0.92);
+  color: #5a4020;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(62, 44, 28, 0.08);
+}
+
+.phoneReplyButton:hover:not(:disabled) {
+  background: rgba(239, 224, 194, 0.95);
+  border-color: rgba(174, 134, 74, 0.65);
+  color: #3e2c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(62, 44, 28, 0.14);
+}
+
+.phoneReplyButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(62, 44, 28, 0.06);
+}
+
+.phoneContinueButton {
+  padding: 10px 36px;
+  border-radius: 10px;
+  border: 2px solid var(--color-accent-warm);
+  background: var(--color-accent-warm);
+  color: var(--color-bg-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.phoneContinueButton:hover {
+  background: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(98, 70, 12, 0.35);
+}
+
+/* 行进度（隐藏） */
+.phoneLineProgress {
+  display: none;
+}
+
+/* 选择提示 */
+.phoneChoicePrompt {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.phoneChoiceBudget {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 14px;
+}
+
+/* 选择列表 */
+.phoneChoiceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.phoneChoiceCard {
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.phoneChoiceCard:hover:not(:disabled) {
+  border-color: var(--color-accent-warm);
+  background: rgba(139, 105, 20, 0.06);
+}
+
+.phoneChoiceCard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.phoneChoiceDisabled {
+  border-style: dashed;
+}
+
+.phoneChoiceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.phoneChoiceTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.phoneChoiceCost {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(139, 105, 20, 0.12);
+  color: var(--color-accent-warm);
+  font-weight: 600;
+}
+
+.phoneChoiceDesc {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.phoneChoiceEffects {
+  background: rgba(139, 105, 20, 0.05);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.phoneChoiceEffectRow {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.phoneChoiceEffectLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  min-width: 64px;
+}
+
+.phoneChoiceEffectText {
+  font-size: 0.74rem;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.phoneChoiceEffectDeltas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.72rem;
+}
+
+.phoneChoiceWarning {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  color: var(--color-danger);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+/* 结果反馈区 — 电话记录纸条风格 */
+.phoneResultBox {
+  border-radius: 0 0 14px 14px;
+  padding: 28px 28px 28px;
+  background: #fcf5e6;
+  border: 1.5px solid rgba(174, 134, 74, 0.35);
+  border-top: 1px solid rgba(174, 134, 74, 0.18);
+  box-shadow: 0 4px 20px rgba(62, 44, 28, 0.10), inset 0 0 40px rgba(174, 134, 74, 0.03);
+}
+
+.phoneResultIcon {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.phoneResultTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.phoneResultText {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+/* ============================================ */
+/* 电话 incoming 选择面板                       */
+/* ============================================ */
+
+.phoneIncomingPrompt {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  text-align: center;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.phoneIncomingSubPrompt {
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.65;
+  margin: 0 0 22px;
+}
+
+.phoneIncomingTitle {
+  font-size: 1.05rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  line-height: 1.75;
+  margin: 0 0 20px;
+  font-style: italic;
+}
+
+.phoneIncomingChoices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.phoneIncomingPrimaryBtn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(174, 134, 74, 0.55);
+  background: rgba(246, 234, 208, 0.95);
+  color: #5a4020;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(62, 44, 28, 0.08);
+}
+
+.phoneIncomingPrimaryBtn:hover {
+  background: rgba(239, 224, 194, 0.98);
+  border-color: rgba(174, 134, 74, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(62, 44, 28, 0.14);
+}
+
+.phoneIncomingSecondaryBtn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(174, 134, 74, 0.28);
+  background: transparent;
+  color: var(--color-text-light);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.phoneIncomingSecondaryBtn:hover {
+  background: rgba(174, 134, 74, 0.06);
+  border-color: rgba(174, 134, 74, 0.45);
+  color: var(--color-text-primary);
+}
+
+/* ============================================ */
+/* 电话拾起选择面板（接听/挂断）— 小型浮层     */
+/* ============================================ */
+
+.phonePickupOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(20, 18, 15, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+.phonePickupPanel {
+  background: #f6ead0;
+  border: 1.5px solid rgba(174, 134, 74, 0.40);
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(62, 44, 28, 0.16);
+}
+
+.phonePickupIcon {
+  font-size: 2.2rem;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.phonePickupPrompt {
+  font-size: 0.92rem;
+  color: #3e2c1c;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.phonePickupSub {
+  font-size: 0.80rem;
+  color: #6b5344;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.phonePickupChoices {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.phonePickupAnswerBtn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(174, 134, 74, 0.55);
+  background: rgba(239, 224, 194, 0.95);
+  color: #5a4020;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(62, 44, 28, 0.08);
+}
+
+.phonePickupAnswerBtn:hover {
+  background: rgba(239, 224, 194, 0.98);
+  border-color: rgba(174, 134, 74, 0.70);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(62, 44, 28, 0.14);
+}
+
+.phonePickupHangupBtn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(174, 134, 74, 0.28);
+  background: transparent;
+  color: #6b5344;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.phonePickupHangupBtn:hover {
+  background: rgba(174, 134, 74, 0.06);
+  border-color: rgba(174, 134, 74, 0.45);
+  color: #3e2c1c;
+}
+
+/* ============================================ */
+/* 家庭来电面板                                */
+/* ============================================ */
+
+.familyCallOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(20, 18, 15, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.familyCallPanel {
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s ease;
+}
+
+.familyCallPhone {
+  padding: 24px 24px 0;
+  text-align: center;
+}
+
+.familyPhoneIcon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  animation: phoneIconPulse 1s ease-in-out infinite;
+}
+
+.familyPhoneRinging {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.familyCallBody {
+  padding: 24px;
+}
+
+.familyCallMessage {
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  font-style: italic;
+  line-height: 1.65;
+  text-align: center;
+  padding: 16px 20px;
+  background: rgba(139, 105, 20, 0.06);
+  border-radius: 12px;
+  margin: 0 0 20px;
+}
+
+.familyCallChoices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.familyCallChoiceBtn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.familyCallChoiceBtn:hover {
+  border-color: var(--color-accent-warm);
+  background: rgba(139, 105, 20, 0.06);
+}
+
+.familyChoiceIcon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.familyChoiceContent {
+  flex: 1;
+}
+
+.familyChoiceLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 2px;
+}
+
+.familyChoiceDesc {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ============================================ */
+/* 第二轮调整提示条 & 已承诺/建议/撤销样式     */
+/* ============================================ */
+
+.adjustmentHeader {
+  background: #fffdf9;
+  border: 1px solid rgba(180, 160, 130, 0.3);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adjustmentInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adjustmentLabel {
+  font-size: 0.78rem;
+  color: #2c3a4a;
+  font-weight: 700;
+}
+
+.adjustmentCount {
+  font-size: 0.78rem;
+  color: #1a2536;
+}
+
+.adjustmentRisk {
+  font-size: 0.7rem;
+  padding: 1px 8px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.riskLow {
+  background: rgba(122, 154, 106, 0.1);
+  color: #7a9a6a;
+}
+
+.riskMedium {
+  background: rgba(201, 164, 64, 0.1);
+  color: #c9a440;
+}
+
+.riskHigh {
+  background: rgba(200, 120, 106, 0.1);
+  color: #c8786a;
+}
+
+.adjustmentEventsSummary {
+  margin-top: 4px;
+}
+
+.adjustmentEventsHint {
+  font-size: 0.74rem;
+  color: #2c3a4a;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.adjustmentEventTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.adjustmentEventTag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(200, 120, 106, 0.06);
+  color: #c8786a;
+  border: 1px solid rgba(200, 120, 106, 0.2);
+}
+
+.adjustmentSuggestions {
+  margin-top: 4px;
+}
+
+.adjustmentSuggestHint {
+  font-size: 0.74rem;
+  color: #3d5a7a;
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.adjustmentSuggestList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.adjustmentSuggestTag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(122, 154, 106, 0.08);
+  color: #7a9a6a;
+  border: 1px solid rgba(122, 154, 106, 0.25);
+}
+
+.adjustmentHint {
+  font-size: 0.78rem;
+  color: #3d5a7a;
+  margin: 0 0 10px;
+}
+
+.adjustmentExhausted {
+  font-size: 0.78rem;
+  color: #c8786a;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+.revokeWarning {
+  padding: 8px 14px;
+  border-radius: 4px;
+  background: rgba(201, 164, 64, 0.06);
+  border: 1px solid rgba(201, 164, 64, 0.35);
+  color: #2c3a4a;
+  font-size: 0.78rem;
+  font-style: italic;
+  margin-bottom: 10px;
+  animation: fadeInUp 0.3s ease;
+  line-height: 1.55;
+}
+
+/* 已承诺 & 建议高亮 */
+.choiceCommitted {
+  border-color: #c9a440 !important;
+  position: relative;
+}
+
+.choiceCommitted::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #c9a440;
+}
+
+.choiceSuggested {
+  border-color: #7a9a6a !important;
+  background: rgba(122, 154, 106, 0.04);
+}
+
+.committedBadge {
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgba(201, 164, 64, 0.12);
+  color: #c9a440;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.revokeRiskBadge {
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: rgba(200, 120, 106, 0.1);
+  color: #c8786a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.suggestedBadge {
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgba(122, 154, 106, 0.1);
+  color: #7a9a6a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ============================================ */
+/* 最终报告面板                                */
+/* ============================================ */
+
+.finalReportOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(20, 18, 15, 0.92);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 20px;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease;
+}
+
+.finalReportPanel {
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  max-width: 720px;
+  width: 100%;
+  padding: 36px 32px;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 0.5s ease;
+}
+
+.finalReportTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin: 0 0 4px;
+}
+
+.finalReportSubtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0 0 28px;
+}
+
+.finalReportSection {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.finalReportSectionTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 14px;
+}
+
+.finalReportSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.finalReportRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.finalReportLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.finalReportValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.reportGood {
+  color: var(--color-success) !important;
+}
+
+.reportWarn {
+  color: var(--color-accent-warm) !important;
+}
+
+.reportDanger {
+  color: var(--color-danger) !important;
+}
+
+.finalReportTags {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.finalReportTagPrimary {
+  font-size: 0.95rem;
+  padding: 6px 18px;
+  border-radius: 12px;
+  background: rgba(139, 105, 20, 0.15);
+  border: 2px solid var(--color-accent-warm);
+  color: var(--color-accent-warm);
+  font-weight: 700;
+}
+
+.finalReportTagSecondary {
+  font-size: 0.85rem;
+  padding: 5px 14px;
+  border-radius: 12px;
+  background: rgba(107, 142, 78, 0.1);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.finalReportTagNote {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 8px 0 0;
+  font-style: italic;
+}
+
+.finalReportQuadGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.finalReportQuadCard {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(139, 105, 20, 0.04);
+  border: 1px solid var(--color-border);
+}
+
+.finalReportQuadTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+}
+
+.finalReportQuadText {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.finalReportEventList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.finalReportEventCard {
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(139, 105, 20, 0.04);
+  border: 1px solid var(--color-border);
+}
+
+.finalReportEventName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 6px;
+}
+
+.finalReportEventDesc {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.finalReportEventOutcome,
+.finalReportEventNote {
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+  margin: 2px 0;
+}
+
+.finalReportEventLabel {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.finalReportMonologue {
+  padding: 18px 22px;
+  background: rgba(139, 105, 20, 0.06);
+  border-radius: 12px;
+  border-left: 4px solid var(--color-accent-warm);
+}
+
+.finalReportMonologueText {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  font-style: italic;
+  margin: 0;
+}
+
+.finalReportScale {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.finalReportScaleSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.finalReportScaleLabel {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.finalReportScaleValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.finalReportScaleBar {
+  flex: 1;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(211, 47, 47, 0.15);
+  overflow: hidden;
+}
+
+.finalReportScaleFill {
+  height: 100%;
+  border-radius: 7px;
+  background: var(--color-success);
+  transition: width 0.5s ease;
+}
+
+.finalReportActions {
+  text-align: center;
+  padding-top: 12px;
+}
+
+.finalReportConfirmBtn {
+  padding: 14px 40px;
+  border-radius: 10px;
+  border: none;
+  background: var(--color-accent-warm);
+  color: var(--color-bg-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.finalReportConfirmBtn:hover {
+  background: var(--color-accent-dark);
+}
+
+/* ============================================ */
+/* 夜晚办公室 — 可交互模式                      */
+/* ============================================ */
+
+/* 根容器夜晚背景 */
+.managerNight {
+  background: #0a0805;
+  transition: background 0.8s ease;
+}
+
+/* ── 可交互夜晚：白天图 + 夜晚图混合 ── */
+
+/* 白天图底层 — 低透明度提供轮廓 */
+.officeNight .officeImage {
+  filter: brightness(1.1) saturate(0.95);
+  transition: filter 0.8s ease;
+}
+
+/* 办公室背景淡入过渡（首次加载） */
+.officeImageFadeIn {
+  animation: officeImageFadeIn 0.35s ease-out;
+}
+
+@keyframes officeImageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 夜晚图上层 — 覆盖在白天图上，保留夜晚氛围 */
+.officeNightOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  opacity: 0.78;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.8s ease;
+}
+
+/* 夜晚覆盖层淡入过渡（切换到夜晚时） */
+.officeNightOverlayFadeIn {
+  animation: officeNightOverlayFadeIn 0.3s ease-out;
+}
+
+@keyframes officeNightOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.78; }
+}
+
+/* ── 夜晚遮罩 — 轻微压暗 ── */
+.officeNight .nightMask {
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 6, 3, 0.02) 0%,
+    rgba(10, 8, 5, 0.08) 50%,
+    rgba(5, 3, 0, 0.22) 100%
+  );
+}
+
+/* ── 最终收束暗场：更暗、更沉重 ── */
+.managerNightEnding {
+  background: #050302;
+  transition: background 0.6s ease;
+}
+
+.officeNightEnding .officeImage {
+  filter: brightness(0.35) saturate(0.35);
+  transition: filter 0.6s ease;
+}
+
+.officeNightEnding .officeNightOverlay {
+  opacity: 0.92;
+}
+
+.officeNightEnding .nightMask {
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 8, 5, 0.12) 0%,
+    rgba(10, 8, 5, 0.35) 50%,
+    rgba(5, 3, 0, 0.75) 100%
+  );
+}
+
+/* 全局阶段引导条 */
+.phaseHintBar {
+  position: fixed;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: rgba(139, 105, 20, 0.12);
+  border: 1px solid rgba(139, 105, 20, 0.25);
+  backdrop-filter: blur(4px);
+  max-width: 90vw;
+}
+
+.phaseHintIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.phaseHintText {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.3;
+}
+
+/* 今日待办下一步文本 */
+.todoNextAction {
+  font-size: 0.9rem;
+  color: var(--color-accent-warm);
+  font-weight: 600;
+  padding: 8px 14px;
+  background: rgba(139, 105, 20, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(139, 105, 20, 0.2);
+}
+
+/* 最终报告空方案提示 */
+.finalReportNullNote {
+  font-size: 0.82rem;
+  color: var(--color-danger);
+  font-style: italic;
+  padding: 10px 14px;
+  background: rgba(211, 47, 47, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(211, 47, 47, 0.15);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.nightEndingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #0a0805;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.nightEndingBackground {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  filter: brightness(0.2) blur(2px);
+}
+
+.nightEndingGradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(20, 15, 8, 0.3) 0%,
+    rgba(5, 3, 0, 0.95) 80%
+  );
+}
+
+.nightEndingContent {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.nightEndingNarration {
+  margin-bottom: 36px;
+}
+
+.nightEndingLine {
+  font-size: 1.05rem;
+  color: rgba(212, 178, 120, 0.85);
+  line-height: 1.8;
+  margin: 0 0 16px;
+  animation: fadeInUp 0.8s ease both;
+}
+
+.nightEndingLine:nth-child(1) { animation-delay: 0s; }
+.nightEndingLine:nth-child(2) { animation-delay: 0.3s; }
+.nightEndingLine:nth-child(3) { animation-delay: 0.6s; }
+.nightEndingLine:nth-child(4) { animation-delay: 0.9s; }
+
+.nightEndingBtn {
+  padding: 14px 42px;
+  border-radius: 10px;
+  border: 2px solid rgba(212, 178, 120, 0.4);
+  background: rgba(212, 178, 120, 0.08);
+  color: rgba(212, 178, 120, 0.9);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeIn 1.2s ease both;
+}
+
+.nightEndingBtn:hover {
+  border-color: rgba(212, 178, 120, 0.7);
+  background: rgba(212, 178, 120, 0.15);
+  color: rgba(212, 178, 120, 1);
+}
+
+/* ============================================ */
+/* 家人电话后夜晚办公室过渡提示                  */
+/* ============================================ */
+
+.duskTransitionOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 18%;
+  background: transparent;
+  pointer-events: auto;
+  animation: duskFadeIn 0.6s ease-out both;
+}
+
+@keyframes duskFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.duskTransitionCard {
+  max-width: 420px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: rgba(15, 10, 5, 0.72);
+  border: 1px solid rgba(160, 130, 80, 0.25);
+  backdrop-filter: blur(8px);
+  text-align: center;
+  animation: duskCardAppear 0.8s ease-out 0.3s both;
+}
+
+@keyframes duskCardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.duskTransitionLine {
+  font-size: 0.82rem;
+  color: rgba(230, 210, 180, 0.75);
+  margin: 0 0 6px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  font-family: var(--font-family-body);
+  animation: duskLineIn 0.6s ease-out both;
+}
+
+.duskTransitionLine:nth-child(1) { animation-delay: 0.5s; }
+.duskTransitionLine:nth-child(2) { animation-delay: 0.8s; }
+.duskTransitionLine:nth-child(3) { animation-delay: 1.1s; }
+
+@keyframes duskLineIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.duskTransitionLine:nth-of-type(3) {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: rgba(240, 220, 180, 0.85);
+}
+
+/* ── "继续游戏"按钮 ── */
+.duskTransitionBtn {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 32px;
+  background: rgba(180, 150, 100, 0.2);
+  border: 1px solid rgba(200, 170, 120, 0.4);
+  border-radius: 8px;
+  color: rgba(240, 220, 180, 0.9);
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.2s ease;
+  animation: duskLineIn 0.6s ease-out 1.4s both;
+}
+
+.duskTransitionBtn:hover {
+  background: rgba(200, 170, 120, 0.35);
+  border-color: rgba(220, 190, 140, 0.6);
+  color: rgba(255, 240, 210, 1);
+}
+
+.duskTransitionBtn:active {
+  background: rgba(200, 170, 120, 0.45);
+  transform: scale(0.97);
+}
+
+/* （公告板样式已迁移至公告板聚焦层章节，此处保留占位避免合并冲突） */
+
+/* 状态栏电话提醒 */
+.statusItemAlert {
+  background: rgba(211, 47, 47, 0.08);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+/* 状态栏阶段提示 */
+.phaseHintRow {
+  padding: 6px 14px;
+  background: rgba(139, 105, 20, 0.06);
+  border-top: 1px solid var(--color-border);
+}
+
+.phaseHintRowText {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .finalReportQuadGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finalReportPpanel {
+    padding: 20px 14px;
+    border-radius: 10px;
+  }
+
+  .familyCallPanel {
+    margin: 0 12px;
+    max-width: 95vw;
+  }
+
+  .nightEndingContent {
+    padding: 24px 16px;
+  }
+
+  .nightEndingLine {
+    font-size: 0.92rem;
+  }
+
+  .choicesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .computerScreen {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .computerSidebar {
+    width: 90px;
+  }
+
+  .sidebarItem {
+    padding: 6px 4px;
+    font-size: 0.65rem;
+  }
+
+  .sidebarItemLabel {
+    display: none;
+  }
+
+  .choicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .monitorGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .todoCards {
+    grid-template-columns: 1fr;
+  }
+
+  /* 小屏微调热点区域 */
+  .hotspotAreaComputer {
+    left: 38%;
+    top: 44%;
+    width: 24%;
+    height: 22%;
+  }
+
+  .hotspotAreaPhone {
+    left: 6%;
+    top: 63%;
+    width: 18%;
+    height: 22%;
+  }
+
+  .hotspotAreaBulletin {
+    left: 6%;
+    top: 6%;
+    width: 36%;
+    height: 36%;
+  }
+
+  .chapterLabel {
+    top: 4px;
+    left: 6px;
+    padding: 2px 8px;
+  }
+
+  .chapterLabelText {
+    font-size: 0.6rem;
+  }
+
+  .chapterLabelIcon {
+    font-size: 0.7rem;
+  }
+
+  /* 小屏下气泡显示在场景上方/下方 */
+  .hotspotAreaComputer .hotspotTooltip,
+  .screenHotspot .hotspotTooltip,
+  .powerButtonHotspot .hotspotTooltip {
+    bottom: 108%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hotspotAreaPhone .hotspotTooltip {
+    top: -120%;
+    left: -20%;
+  }
+
+  .hotspotAreaBulletin .hotspotTooltip {
+    top: 108%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* 电脑聚焦视图 — 极小屏适配 */
+  .computerFocusView {
+    align-items: flex-start;
+    padding-top: 2vh;
+  }
+
+  .monitorDevice {
+    width: 96vw;
+  }
+
+  .monitorBezel {
+    border-radius: 3px;
+    padding: 3px 4px 5px;
+  }
+
+  .monitorScreen {
+    border-radius: 2px;
+  }
+
+  .monitorScreen::after {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.02) 3px,
+      rgba(0, 0, 0, 0.02) 6px
+    );
+  }
+
+  .monitorStand {
+    width: clamp(20px, 9vw, 40px);
+    height: clamp(10px, 3vh, 22px);
+  }
+
+  .monitorBase {
+    width: clamp(80px, 32vw, 160px);
+    height: clamp(4px, 1vw, 8px);
+  }
+
+  .keyboardDevice {
+    max-width: 84vw;
+  }
+
+  .keyboardBody {
+    aspect-ratio: 4 / 1;
+    padding: 2px 3px;
+    gap: 1px;
+    border-radius: 3px;
+    transform: rotateX(5deg);
+  }
+
+  .keyboardKeyRow {
+    background:
+      repeating-linear-gradient(
+        90deg,
+        #2a2d34 0px,
+        #2a2d34 clamp(6px, 2.5vw, 14px),
+        transparent clamp(6px, 2.5vw, 14px),
+        transparent clamp(8px, 3vw, 17px)
+      );
+  }
+
+  .mouseDevice {
+    width: 20px;
+    height: 34px;
+    margin-bottom: 2px;
+  }
+
+  .deskPeripherals {
+    gap: 6px;
+    width: 96vw;
+  }
+
+  .computerEmbedded .computerSidebar {
+    max-height: 30px;
+  }
+
+  .computerEmbedded .sidebarItem {
+    padding: 3px 4px;
+    font-size: 0.5rem;
+  }
+
+  .computerEmbedded .sidebarItemLabel {
+    font-size: 0.5rem;
+  }
+
+  .computerEmbedded .computerRightSidebar {
+    max-height: 52px;
+  }
+
+  .computerEmbedded .computerContent {
+    min-height: 200px;
+  }
+
+  .computerEmbedded .computerTitleDate,
+  .computerEmbedded .computerTitleStatus,
+  .computerEmbedded .computerTitleSub {
+    display: none;
+  }
+}
+
+/* ================================================================
+   办公室电脑屏幕缩略预览 — 叠加在远景显示器屏幕区域
+   基于 manager-office-day.png 原图 1672 × 941 估算
+   显示器屏幕玻璃区域约为: x:648px y:400px w:318px h:198px
+   不可交互，只做视觉延续
+   ================================================================ */
+
+/* 屏幕区域 — 基于原图百分比精确定位，兄弟元素于 hotspotArea */
+.officeComputerScreen {
+  position: absolute;
+
+  /* 基于原图 1672×941，屏幕玻璃区域:
+     x: 648px → 38.8%
+     y: 400px → 42.5%
+     w: 318px → 19.0%
+     h: 198px → 21.0% */
+  left: var(--monitor-screen-left);
+  top: var(--monitor-screen-top);
+  width: var(--monitor-screen-width);
+  height: var(--monitor-screen-height);
+
+  z-index: 4;
+  overflow: hidden;
+  border-radius: 3px;
+  pointer-events: none;
+  box-sizing: border-box;
+
+  /* 开机淡入动画 */
+  animation: screenBootFadeIn 360ms ease-out both;
+}
+
+@keyframes screenBootFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── 夜晚办公室：显示器屏幕内容亮度降至 80% ── */
+.officeComputerScreenNight {
+  filter: brightness(0.8);
+}
+
+/* ── 电脑屏幕上的游戏内时间显示 ── */
+.officeScreenTime {
+  position: absolute;
+  top: 5%;
+  right: 6%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.officeScreenTimeText {
+  font-size: clamp(0.38rem, 0.7vw, 0.5rem);
+  color: rgba(220, 215, 200, 0.7);
+  font-family: var(--font-family-body);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-shadow: 0 0 4px rgba(120, 140, 180, 0.3);
+}
+
+/* ── 夜晚办公室电脑屏幕提示：临时调整待处理 ── */
+.officeScreenAlert {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(200, 60, 30, 0.15);
+  border: 1px solid rgba(220, 100, 60, 0.3);
+  pointer-events: none;
+  animation: screenAlertPulse 2s ease-in-out infinite;
+}
+
+@keyframes screenAlertPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.officeScreenAlertDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e06030;
+  flex-shrink: 0;
+  animation: alertDotBlink 1s step-end infinite;
+}
+
+@keyframes alertDotBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.officeScreenAlertText {
+  font-size: clamp(0.38rem, 0.7vw, 0.48rem);
+  color: #e8a070;
+  font-family: var(--font-family-body);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── 开机后点击屏幕进入系统（透明层，与 officeComputerScreen 共用坐标）── */
+.screenHotspot {
+  position: absolute;
+  left: var(--monitor-screen-left);
+  top: var(--monitor-screen-top);
+  width: var(--monitor-screen-width);
+  height: var(--monitor-screen-height);
+  z-index: 8;
+  pointer-events: auto;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  outline: none;
+}
+
+/* ── 未开机时右下角电源键热区 ── */
+.powerButtonHotspot {
+  position: absolute;
+  left: var(--monitor-power-left);
+  top: var(--monitor-power-top);
+  width: var(--monitor-power-width);
+  height: var(--monitor-power-height);
+  z-index: 8;
+  pointer-events: auto;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  outline: none;
+}
+
+/* ── 未开机红灯脉冲提示 ── */
+.powerButtonHotspot::after {
+  content: '';
+  position: absolute;
+  right: 24%;
+  bottom: 0%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #c94a32;
+  box-shadow: 0 0 7px rgba(201, 74, 50, 0.62);
+  animation: powerLedPulse 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes powerLedPulse {
+  0%, 100% {
+    opacity: 0.42;
+    transform: scale(0.9);
+    box-shadow: 0 0 4px rgba(201, 74, 50, 0.36);
+  }
+
+  45%, 55% {
+    opacity: 0.95;
+    transform: scale(1.05);
+    box-shadow: 0 0 9px rgba(201, 74, 50, 0.72);
+  }
+}
+
+/* 关闭视觉干扰时红灯保持常亮，取消动画 */
+[data-disable-effects='true'] .powerButtonHotspot::after {
+  animation: none;
+  opacity: 0.75;
+  transform: none;
+}
+
+/* ── 已开机绿色常亮电源指示灯 ── */
+.powerButtonHotspot.booted::after {
+  background: #2e8b57;
+  box-shadow: 0 0 6px rgba(46, 139, 87, 0.55);
+  animation: none;
+  opacity: 0.85;
+  transform: none;
+}
+
+[data-disable-effects='true'] .powerButtonHotspot.booted::after {
+  opacity: 0.65;
+}
+
+/* 缩略预览容器 */
+.computerScreenPreview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f0dfbd 0%, #dcc49f 100%);
+  color: #263545;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 8px rgba(255, 245, 210, 0.45),
+    0 0 8px rgba(255, 220, 150, 0.25);
+  pointer-events: none;
+  box-sizing: border-box;
+  font-size: clamp(0.4rem, 0.75vw, 0.55rem);
+  line-height: 1.25;
+  filter: brightness(0.88) saturate(0.92) contrast(1.08);
+  position: relative;
+}
+
+.computerScreenPreview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 246, 220, 0.08),
+    rgba(45, 38, 30, 0.14)
+  );
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  border-radius: 3px;
+}
+
+/* 顶部标题栏 */
+.computerScreenPreviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  background: linear-gradient(180deg, #e8dfcd, #dcd3ba);
+  border-bottom: 1px solid rgba(180, 160, 130, 0.4);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.computerScreenPreviewHeaderDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #1d5fd0;
+  flex-shrink: 0;
+}
+
+.computerScreenPreviewHeaderTitle {
+  font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+  font-weight: 800;
+  color: #253241;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.computerScreenPreviewHeaderUser {
+  font-size: clamp(0.32rem, 0.5vw, 0.42rem);
+  font-weight: 700;
+  color: #405063;
+  flex-shrink: 0;
+}
+
+/* 主体：左侧菜单 + 内容区 */
+.computerScreenPreviewBody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* 左侧菜单 */
+.computerScreenPreviewSidebar {
+  width: clamp(26px, 5.5vw, 44px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f7f2e8;
+  border-right: 1px solid rgba(180, 160, 130, 0.35);
+  gap: 0;
+  overflow: hidden;
+}
+
+.computerScreenPreviewMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2px, 0.35vh, 3px) clamp(2px, 0.4vw, 4px);
+  border-left: 2.5px solid transparent;
+  color: #5a6578;
+  font-size: clamp(0.32rem, 0.55vw, 0.46rem);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.computerScreenPreviewMenuItemActive {
+  background: rgba(29, 95, 208, 0.14);
+  border-left-color: #1d5fd0;
+  color: #1a2536;
+  font-weight: 800;
+}
+
+.computerScreenPreviewMenuItemText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 内容区 */
+.computerScreenPreviewMain {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 3px 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.previewSectionTitle {
+  font-size: clamp(0.42rem, 0.75vw, 0.6rem);
+  font-weight: 800;
+  color: #253241;
+  margin: 0;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+/* 通用卡片行 */
+.previewCardRow {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.previewDashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.previewCard {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 246, 222, 0.82);
+  border: 1px solid rgba(72, 85, 95, 0.28);
+  border-radius: 3px;
+  padding: 2px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.previewCardStrong {
+  background: rgba(255, 237, 188, 0.9);
+  border-color: rgba(89, 95, 102, 0.36);
+}
+
+.previewCardValue {
+  font-size: clamp(0.55rem, 1.0vw, 0.85rem);
+  font-weight: 900;
+  color: #1f2f3f;
+  line-height: 1;
+}
+
+.previewCardUnit {
+  font-size: clamp(0.32rem, 0.5vw, 0.48rem);
+  font-weight: 700;
+  color: #405063;
+}
+
+.previewCardLabel {
+  font-size: clamp(0.28rem, 0.45vw, 0.42rem);
+  color: #405063;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 底部提示条 */
+.previewHintBar {
+  background: rgba(29, 95, 208, 0.08);
+  border-radius: 3px;
+  padding: 2px 3px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.previewHintText {
+  font-size: clamp(0.28rem, 0.45vw, 0.42rem);
+  color: #1d5fd0;
+  font-weight: 700;
+}
+
+/* ===== 邮件缩略 ===== */
+.previewMailList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.previewMailItem {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 3px;
+  border-radius: 3px;
+  background: rgba(255, 246, 222, 0.82);
+  border: 1px solid rgba(72, 85, 95, 0.28);
+  font-size: clamp(0.32rem, 0.55vw, 0.46rem);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.previewMailItemActive {
+  background: rgba(29, 95, 208, 0.1);
+  border-left: 2.5px solid #1d5fd0;
+}
+
+.previewMailTag {
+  font-size: clamp(0.28rem, 0.45vw, 0.38rem);
+  color: #1d5fd0;
+  background: rgba(29, 95, 208, 0.1);
+  border-radius: 2px;
+  padding: 0 3px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.previewMailSubject {
+  color: #263545;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 运营报表缩略 ===== */
+.previewMetricsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.previewMetricRow {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.previewMetricLabel {
+  width: clamp(24px, 4.5vw, 36px);
+  flex-shrink: 0;
+  font-size: clamp(0.3rem, 0.5vw, 0.44rem);
+  color: #405063;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewMetricBar {
+  flex: 1;
+  height: clamp(3px, 0.5vh, 4px);
+  background: rgba(180, 160, 130, 0.25);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.previewMetricBarFill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #1d5fd0, #5b9bd5);
+}
+
+.previewMetricVal {
+  font-size: clamp(0.38rem, 0.65vw, 0.55rem);
+  font-weight: 800;
+  color: #1f2f3f;
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ===== 监控缩略 ===== */
+.previewMonitorLayout {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.previewMonitorMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.previewMonitorFrame {
+  flex: 1;
+  background: linear-gradient(135deg, #1a2536, #0d1520);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.previewMonitorFrame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+
+.previewMonitorCamId {
+  color: rgba(200, 220, 240, 0.9);
+  font-size: clamp(0.38rem, 0.6vw, 0.52rem);
+  font-weight: 800;
+  text-shadow: 0 0 3px rgba(100, 180, 255, 0.4);
+  letter-spacing: 0.03em;
+}
+
+.previewMonitorSideList {
+  width: clamp(22px, 4.5vw, 34px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.previewMonitorSideCard {
+  padding: 2px 3px;
+  border-radius: 3px;
+  background: rgba(255, 246, 222, 0.82);
+  border: 1px solid rgba(72, 85, 95, 0.28);
+  font-size: clamp(0.28rem, 0.45vw, 0.4rem);
+  color: #405063;
+  font-weight: 700;
+  text-align: center;
+}
+
+.previewMonitorSideCardActive {
+  background: rgba(29, 95, 208, 0.14);
+  color: #1a2536;
+  font-weight: 800;
+}
+
+.previewMonitorSideName {
+  white-space: nowrap;
+}
+
+/* 监控底部风险标签 */
+.previewRiskTags {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.previewRiskTag {
+  font-size: clamp(0.26rem, 0.42vw, 0.36rem);
+  color: #d3633a;
+  background: rgba(211, 99, 58, 0.12);
+  border-radius: 2px;
+  padding: 1px 3px;
+  font-weight: 700;
+}
+
+/* ===== 系统通知缩略 ===== */
+.previewNotificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.previewNotificationItem {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 3px;
+  border-radius: 3px;
+  background: rgba(255, 246, 222, 0.82);
+  border: 1px solid rgba(72, 85, 95, 0.28);
+  overflow: hidden;
+}
+
+.previewNotificationTag {
+  font-size: clamp(0.26rem, 0.42vw, 0.36rem);
+  border-radius: 2px;
+  padding: 0 3px;
+  flex-shrink: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.previewNotifTagFlow {
+  color: #1d5fd0;
+  background: rgba(29, 95, 208, 0.12);
+}
+
+.previewNotifTagRisk {
+  color: #d3633a;
+  background: rgba(211, 99, 58, 0.12);
+}
+
+.previewNotificationText {
+  font-size: clamp(0.3rem, 0.5vw, 0.44rem);
+  color: #263545;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== 预算审批缩略 ===== */
+.previewBudgetCards {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.previewBudgetCard {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 246, 222, 0.82);
+  border: 1px solid rgba(72, 85, 95, 0.28);
+  border-radius: 3px;
+  padding: 2px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.previewBudgetCardLabel {
+  font-size: clamp(0.28rem, 0.45vw, 0.42rem);
+  color: #405063;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.previewBudgetCardValue {
+  font-size: clamp(0.48rem, 0.85vw, 0.72rem);
+  font-weight: 900;
+  color: #1f2f3f;
+  line-height: 1;
+}
+
+.previewBudgetProgress {
+  flex-shrink: 0;
+  padding: 1px 2px;
+}
+
+.previewBudgetProgressTrack {
+  height: clamp(3px, 0.5vh, 4px);
+  background: rgba(180, 160, 130, 0.25);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.previewBudgetProgressFill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #1d5fd0, #5b9bd5);
+  transition: width 0.3s ease;
+}
+
+/* 响应式：极小屏幕下缩略预览微调 */
+@media (max-width: 480px) {
+  .officeComputerScreen {
+    left: 38.5%;
+    top: 43%;
+    width: 20%;
+    height: 20.5%;
+  }
+
+  .screenHotspot {
+    left: 38.5%;
+    top: 43%;
+    width: 20%;
+    height: 20.5%;
+  }
+
+  .powerButtonHotspot {
+    left: 55%;
+    top: 63%;
+    width: 4.2%;
+    height: 4.5%;
+  }
+
+  .computerScreenPreviewSidebar {
+    width: clamp(24px, 7.5vw, 40px);
+  }
+
+  .computerScreenPreviewMenuItem {
+    padding: 2px;
+  }
+}
+
+/* ================================================================
+   值班电话记录面板 — 办公室登记单风格
+   ================================================================ */
+
+.phoneRecordOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 14, 8, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.phoneRecordPanel {
+  width: min(700px, 95vw);
+  max-height: 82vh;
+  background: #f6ead0;
+  border: 1.5px solid rgba(174, 134, 74, 0.45);
+  border-radius: 10px;
+  box-shadow:
+    0 6px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 60px rgba(255, 245, 220, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 顶部标题栏 — 暖米色复古夹板风格 */
+.phoneRecordHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, #ead9b8 0%, #dac8a2 100%);
+  border-bottom: 1px solid rgba(174, 134, 74, 0.35);
+}
+
+.phoneRecordHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phoneRecordHeaderIcon {
+  font-size: 1.3rem;
+}
+
+.phoneRecordHeaderTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #3e2c1c;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.phoneRecordCloseBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(174, 134, 74, 0.08);
+  border: 1px solid rgba(174, 134, 74, 0.25);
+  border-radius: 6px;
+  color: #6b5344;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.phoneRecordCloseBtn:hover {
+  background: rgba(174, 134, 74, 0.16);
+  border-color: rgba(174, 134, 74, 0.45);
+  color: #3e2c1c;
+}
+
+/* 记录主体区域 */
+.phoneRecordBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 20px;
+}
+
+/* 空状态 */
+.phoneRecordEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  color: #9e8a72;
+}
+
+.phoneRecordEmptyIcon {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.phoneRecordEmptyText {
+  font-size: 0.92rem;
+  color: #9e8a72;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* 记录表格 */
+.phoneRecordTable {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 表头行 */
+.phoneRecordRowHeader {
+  display: flex;
+  align-items: center;
+  padding: 8px 4px 6px;
+  border-bottom: 2px solid rgba(174, 134, 74, 0.3);
+  font-size: 0.72rem;
+  color: #8a7660;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* 数据行 */
+.phoneRecordRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(174, 134, 74, 0.12);
+  font-size: 0.84rem;
+  color: #3e2c1c;
+  transition: background 0.15s;
+}
+
+.phoneRecordRow:hover {
+  background: rgba(239, 224, 194, 0.5);
+}
+
+.phoneRecordRowOutgoing {
+  background: rgba(220, 210, 180, 0.25);
+}
+
+.phoneRecordRowOutgoing:hover {
+  background: rgba(220, 210, 180, 0.45);
+}
+
+/* 列宽 */
+.phoneRecordColTime {
+  flex: 0 0 148px;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  color: #5a4a3a;
+  font-variant-numeric: tabular-nums;
+}
+
+.phoneRecordColDir {
+  flex: 0 0 50px;
+}
+
+.phoneRecordColContact {
+  flex: 0 0 108px;
+  font-weight: 500;
+}
+
+.phoneRecordColRole {
+  flex: 0 0 70px;
+}
+
+.phoneRecordColResult {
+  flex: 0 0 80px;
+}
+
+.phoneRecordColDuration {
+  flex: 0 0 80px;
+  color: #6b5344;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.phoneRecordColAction {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 方向标签 */
+.phoneRecordDirIncoming {
+  color: #5a7a4a;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.phoneRecordDirOutgoing {
+  color: #7a5a3a;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* 角色标签 */
+.phoneRecordRoleTag {
+  display: inline-block;
+  padding: 1px 6px;
+  background: rgba(174, 134, 74, 0.1);
+  border: 1px solid rgba(174, 134, 74, 0.2);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #6b5344;
+  white-space: nowrap;
+}
+
+/* 结果徽章 */
+.phoneRecordResultBadge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.phoneRecordResultDone {
+  background: rgba(90, 140, 70, 0.12);
+  color: #4a6a3a;
+  border: 1px solid rgba(90, 140, 70, 0.2);
+}
+
+.phoneRecordResultMissed {
+  background: rgba(180, 80, 40, 0.1);
+  color: #9a4a2a;
+  border: 1px solid rgba(180, 80, 40, 0.2);
+}
+
+.phoneRecordResultPending {
+  background: rgba(180, 140, 60, 0.1);
+  color: #8a6a30;
+  border: 1px solid rgba(180, 140, 60, 0.2);
+}
+
+/* 回拨按钮 */
+.phoneRecordCallbackBtn {
+  padding: 3px 12px;
+  background: rgba(239, 224, 194, 0.7);
+  border: 1px solid rgba(174, 134, 74, 0.35);
+  border-radius: 5px;
+  color: #5a4a30;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+
+.phoneRecordCallbackBtn:hover {
+  background: rgba(239, 224, 194, 0.95);
+  border-color: rgba(174, 134, 74, 0.55);
+  color: #3e2c1c;
+}
+
+/* 底部条 */
+.phoneRecordFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 20px;
+  background: linear-gradient(0deg, #ead9b8 0%, #e5d0a8 100%);
+  border-top: 1px solid rgba(174, 134, 74, 0.25);
+}
+
+.phoneRecordFooterNote {
+  font-size: 0.72rem;
+  color: #8a7660;
+  letter-spacing: 0.04em;
+}
+
+/* 回拨按钮禁用状态 */
+.phoneRecordCallbackDisabled {
+  padding: 3px 12px;
+  background: rgba(200, 190, 170, 0.3);
+  border: 1px solid rgba(174, 134, 74, 0.15);
+  border-radius: 5px;
+  color: #b0a090;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: not-allowed;
+  letter-spacing: 0.03em;
+}
+
+/* ── 小屏幕/窄面板：时间列压缩 + 表格横向滚动 ── */
+@media (max-width: 600px) {
+  .phoneRecordPanel {
+    width: 95vw;
+  }
+
+  .phoneRecordBody {
+    overflow-x: auto;
+    padding: 10px 12px;
+  }
+
+  .phoneRecordTable {
+    min-width: 560px;
+  }
+
+  .phoneRecordColTime {
+    flex: 0 0 120px;
+    font-size: 0.72rem;
+  }
+
+  .phoneRecordColDir {
+    flex: 0 0 44px;
+  }
+
+  .phoneRecordColContact {
+    flex: 0 0 96px;
+  }
+
+  .phoneRecordColRole {
+    flex: 0 0 60px;
+  }
+
+  .phoneRecordColResult {
+    flex: 0 0 72px;
+  }
+
+  .phoneRecordColDuration {
+    flex: 0 0 72px;
+    font-size: 0.74rem;
+  }
+}
+
+/* ================================================================
+   回拨过渡卡片（紧凑轻量版）
+   ================================================================ */
+
+/* 全屏覆盖层 */
+.callbackOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+
+.callbackOverlayFading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.callbackBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 24, 18, 0.35);
+  backdrop-filter: blur(3px);
+}
+
+/* 通话卡片：紧凑暖色复古 */
+.callbackCard {
+  position: relative;
+  z-index: 1;
+  width: 340px;
+  max-width: 92vw;
+  background: linear-gradient(170deg, #faf3e4 0%, #f2e3cc 100%);
+  border: 1px solid rgba(174, 134, 74, 0.25);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 32px rgba(62, 44, 28, 0.18),
+    0 2px 8px rgba(62, 44, 28, 0.08),
+    inset 0 0 40px rgba(174, 134, 74, 0.03);
+  display: flex;
+  flex-direction: column;
+  animation: callbackCardAppear 0.35s ease-out;
+}
+
+@keyframes callbackCardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 卡片头部：图标 + 标题 */
+.callbackCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+.callbackCardIcon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.callbackCardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #3e2c1c;
+  letter-spacing: 0.02em;
+}
+
+/* 卡片主体 */
+.callbackCardBody {
+  padding: 18px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 80px;
+}
+
+/* "拿起听筒，正在拨号……" */
+.callbackDialingSub {
+  font-size: 0.85rem;
+  color: #8a7660;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* "嘟——" / "嘟—— 嘟——" */
+.callbackDialTone {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #3e2c1c;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-align: center;
+}
+
+.callbackDialTonePulse {
+  animation: callbackTonePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes callbackTonePulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* "电话接通了。" */
+.callbackConnectedWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.callbackConnectedText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5a7a4a;
+  margin: 0;
+}
+
+.callbackOtherParty {
+  font-size: 0.88rem;
+  color: #6b5344;
+  font-style: italic;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 卡片底部：跳过按钮 */
+.callbackCardFooter {
+  padding: 0 20px 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.callbackSkipBtn {
+  padding: 5px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(174, 134, 74, 0.25);
+  background: rgba(255, 255, 255, 0.55);
+  color: #8a7660;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(2px);
+}
+
+.callbackSkipBtn:hover {
+  background: rgba(255, 255, 255, 0.75);
+  color: #3e2c1c;
+  border-color: rgba(174, 134, 74, 0.4);
+}
+
+/* ================================================================
+   图片加载占位层
+   ================================================================ */
+
+.imageLoadingPlaceholder {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3a2f28 0%, #4a3a2e 50%, #3a2a1c 100%);
+  pointer-events: none;
+}
+
+.imageLoadingPlaceholderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 220, 180, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.imageLoadingPlaceholderIcon {
+  font-size: 2.5rem;
+  opacity: 0.7;
+  animation: placeholderPulse 1.2s ease-in-out infinite;
+}
+
+.imageLoadingPlaceholderText {
+  font-size: 1.05rem;
+  color: rgba(240, 225, 200, 0.85);
+  margin: 0;
+  font-family: var(--font-family-body, system-ui, sans-serif);
+  letter-spacing: 0.02em;
+}
+
+@keyframes placeholderPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}

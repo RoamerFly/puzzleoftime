@@ -1,0 +1,50 @@
+# .cnb.yml
+# 《岁月拼图》（Puzzle of Time）CNB 云原生开发与构建配置
+# 目标：
+# 1. 云原生开发环境自动使用 Node 22，避免回收后 npm 命令丢失。
+# 2. feature/manager-chapter 分支 push 时自动执行前端构建检查。
+
+$:
+  vscode:
+    - name: "Puzzle of Time dev environment"
+      docker:
+        image: node:22
+      services:
+        - vscode
+        - docker
+      stages:
+        - name: show node version
+          script: node -v
+
+        - name: show npm version
+          script: npm -v
+
+        - name: install dependencies
+          script: npm install
+
+feature/manager-chapter:
+  push:
+    - name: "Puzzle of Time frontend build"
+      docker:
+        image: node:22
+      stages:
+        - name: show node version
+          script: node -v
+
+        - name: show npm version
+          script: npm -v
+
+        - name: install dependencies
+          script: npm install
+
+        - name: type check
+          script: npx tsc --noEmit
+
+        - name: lint
+          script: npm run lint
+
+        - name: build
+          script: npm run build
+
+        - name: verify dist
+          script: test -d dist

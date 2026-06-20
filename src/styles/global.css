@@ -1,0 +1,103 @@
+@import './variables.css';
+
+/* === 全局重置 === */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--base-font-size);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-body);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  /* CSS渐变模拟纸质纹理 */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(139, 105, 20, 0.02) 50px,
+      rgba(139, 105, 20, 0.02) 51px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(139, 105, 20, 0.02) 50px,
+      rgba(139, 105, 20, 0.02) 51px
+    ),
+    radial-gradient(ellipse at 20% 50%, rgba(245, 230, 200, 0.8) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 20%, rgba(237, 224, 204, 0.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, rgba(196, 168, 124, 0.15) 0%, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 纸张质感卡片 === */
+.paper-card {
+  background-color: var(--color-bg-secondary);
+  box-shadow: var(--shadow-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+}
+
+/* === 旧照片效果 === */
+.vintage-photo {
+  filter: sepia(30%) contrast(85%) brightness(95%);
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+/* === 链接 === */
+a {
+  color: var(--color-accent-warm);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--color-accent-rose);
+}
+
+/* === 选择框 === */
+::selection {
+  background-color: rgba(139, 105, 20, 0.2);
+  color: var(--color-text-primary);
+}
+
+/* === 滚动条（复古风格） === */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-warm);
+}
+
+/* === 焦点样式（适老化，高可见性） === */
+:focus-visible {
+  outline: 3px solid var(--color-accent-warm);
+  outline-offset: 2px;
+}

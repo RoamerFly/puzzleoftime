@@ -1,0 +1,176 @@
+.container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-family: var(--font-family-title);
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  width: 100%;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+}
+
+.card:hover:not(.locked) {
+  border-color: var(--color-accent-warm);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.card:active:not(.locked) {
+  transform: translateY(0);
+}
+
+.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(30%);
+}
+
+.unlocked {
+  border-color: var(--color-border);
+}
+
+.completed {
+  border-color: var(--color-success);
+  background-color: rgba(107, 142, 78, 0.08);
+}
+
+.epilogue {
+  border-style: dashed;
+}
+
+.cardIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: 50px;
+  text-align: center;
+}
+
+.cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.cardTitle {
+  font-family: var(--font-family-title);
+  font-size: 1.2rem;
+  color: var(--color-text-primary);
+  margin: 0 0 2px 0;
+}
+
+.cardSubtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+.completedBadge {
+  font-size: 0.8rem;
+  color: var(--color-success);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* === 开发调试面板（仅 dev 环境） === */
+.debugPanel {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  border: 2px dashed var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: rgba(196, 154, 60, 0.06);
+}
+
+.debugTitle {
+  font-size: 0.8rem;
+  color: var(--color-warning);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-sm) 0;
+  text-align: center;
+}
+
+.debugActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.debugBtn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.8rem;
+  font-family: var(--font-family-body);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.debugBtn:hover {
+  border-color: var(--color-accent-warm);
+  color: var(--color-text-primary);
+}
+
+.debugBtnPrimary {
+  composes: debugBtn;
+  border-color: var(--color-accent-warm);
+  color: var(--color-accent-warm);
+  font-weight: 600;
+}
+
+.debugBtnPrimary:hover {
+  background-color: var(--color-accent-warm);
+  color: #FFF8E7;
+}
+
+.debugBtnDanger {
+  composes: debugBtn;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.debugBtnDanger:hover {
+  background-color: var(--color-danger);
+  color: #FFF8E7;
+}

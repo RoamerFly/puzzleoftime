@@ -1,0 +1,2938 @@
+/* === 老人模块样式（全屏场景探索版） ===
+ * 所有类名使用 elder- 前缀，避免污染其他模块
+ */
+
+/* ── 全屏场景容器 ── */
+.elder-scene-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: var(--font-family-body);
+  background: #2a1e12;
+  user-select: none;
+}
+
+/* ── 场景背景层 ── */
+.elder-scene-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.8s ease;
+}
+
+.elder-scene-bg--fade-out {
+  opacity: 0;
+}
+
+.elder-scene-bg--fade-in {
+  opacity: 1;
+}
+
+/* ── 场景滤镜层（时段光照 + 暖色滤镜） ── */
+.elder-scene-filter {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 2s ease;
+}
+
+/* 清晨：柔和暖光 */
+.elder-scene-filter--morning {
+  background: rgba(255, 220, 150, 0.08);
+}
+
+/* 上午：明亮自然 */
+.elder-scene-filter--forenoon {
+  background: rgba(255, 240, 200, 0.05);
+}
+
+/* 中午：最亮 */
+.elder-scene-filter--noon {
+  background: rgba(255, 250, 230, 0.03);
+}
+
+/* 午后 */
+.elder-scene-filter--afternoon {
+  background: rgba(255, 220, 160, 0.06);
+}
+
+/* 傍晚：暖橙色 */
+.elder-scene-filter--evening {
+  background: rgba(255, 180, 100, 0.12);
+}
+
+/* 晚上：冷暗 */
+.elder-scene-filter--night {
+  background: rgba(20, 15, 40, 0.25);
+}
+
+/* 深夜 */
+.elder-scene-filter--late-night {
+  background: rgba(10, 8, 30, 0.4);
+}
+
+/* ── 场景渐变遮罩（底部加深，让热点和文字更清晰） ── */
+.elder-scene-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(42, 30, 18, 0.1) 0%,
+    rgba(42, 30, 18, 0.15) 40%,
+    rgba(42, 30, 18, 0.4) 75%,
+    rgba(42, 30, 18, 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── 热点叠加层 ── */
+.elder-hotspot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* ── 单个热点（v6.5 移动端自适应放缩） ── */
+.elder-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* 视口自适应：桌面大屏 → 最大尺寸，手机小屏 → 最小触控尺寸 */
+  padding:
+    clamp(5px, 0.7vw, 10px)
+    clamp(10px, 1.5vw, 18px);
+  border-radius: clamp(6px, 0.7vw, 10px);
+  font-size: clamp(13px, 1.8vw, 18px);
+  font-weight: 600;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.3;
+  transition: all 0.25s ease;
+  z-index: 11;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  /* 触控优化：禁止双击缩放，保证触控响应速度 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.elder-hotspot--action {
+  background: rgba(180, 140, 90, 0.85);
+  color: #FFF8E7;
+  border: 1.5px solid rgba(255, 240, 210, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.elder-hotspot--action:hover {
+  background: rgba(200, 160, 100, 0.95);
+  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.elder-hotspot--action:active {
+  transform: translate(-50%, -50%) scale(0.94);
+  background: rgba(160, 120, 70, 0.95);
+}
+
+/* 移动端：hover 不回弹（触屏无 hover），增强 active 反馈 */
+@media (hover: none) and (pointer: coarse) {
+  .elder-hotspot--action:active {
+    transform: translate(-50%, -50%) scale(0.9);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.1s ease;
+  }
+}
+
+.elder-hotspot--completed {
+  background: rgba(120, 160, 100, 0.7);
+  border-color: rgba(160, 200, 140, 0.6);
+  opacity: 0.6;
+  cursor: default;
+}
+
+.elder-hotspot--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── 等待至用餐时间 ── */
+.elder-hotspot--waiting {
+  background: rgba(180, 150, 90, 0.75);
+  border-color: rgba(220, 190, 110, 0.7);
+  animation: elder-waiting-pulse 2s ease-in-out infinite;
+}
+
+@keyframes elder-waiting-pulse {
+  0%, 100% { box-shadow: 0 2px 12px rgba(180, 150, 90, 0.3); }
+  50% { box-shadow: 0 2px 24px rgba(220, 190, 110, 0.5); }
+}
+
+/* ── 出口热点（v6.5 移动端自适应放缩） ── */
+.elder-exit {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding:
+    clamp(6px, 0.9vw, 12px)
+    clamp(12px, 2vw, 22px);
+  border-radius: clamp(7px, 0.9vw, 12px);
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 600;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.3;
+  transition: all 0.25s ease;
+  z-index: 11;
+  background: rgba(100, 80, 55, 0.8);
+  color: #FFF8E7;
+  border: 1.5px solid rgba(200, 175, 140, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  /* 触控优化 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.elder-exit:hover {
+  background: rgba(120, 100, 70, 0.9);
+  transform: translate(-50%, -50%) scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.elder-exit:active {
+  transform: translate(-50%, -50%) scale(0.94);
+  background: rgba(90, 70, 45, 0.9);
+}
+
+/* 移动端出口：增强 active 反馈 */
+@media (hover: none) and (pointer: coarse) {
+  .elder-exit:active {
+    transform: translate(-50%, -50%) scale(0.9);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.1s ease;
+  }
+}
+
+.elder-exit--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.elder-exit__cost {
+  margin-left: clamp(4px, 0.5vw, 6px);
+  font-size: clamp(10px, 1.2vw, 13px);
+  opacity: 0.8;
+}
+
+.elder-exit__cost--strain {
+  color: #ff9a8b;
+}
+
+/* ── HUD 状态栏（顶部） ── */
+.elder-hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 16px;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.elder-hud-top > * {
+  pointer-events: auto;
+}
+
+/* ── 顶部自动通知条（独立定位，居中） ── */
+.elder-notification-stack {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 560px;
+  width: 90%;
+  pointer-events: none; /* 不阻挡场景点击 */
+}
+
+.elder-notification-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: rgba(42, 30, 18, 0.82);
+  color: #ffebc8;
+  border: 1px solid rgba(255, 220, 150, 0.4);
+  border-radius: 10px;
+  padding: 9px 18px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  white-space: normal;
+  pointer-events: auto;
+  animation: elder-notification-in 0.4s ease-out forwards;
+}
+
+.elder-notification-bar__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.elder-notification-bar__text {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+  font-family: var(--font-family-body, inherit);
+}
+
+@keyframes elder-notification-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ══════════════════════════════════════
+   v6.9: 来电响铃脉冲条
+   ══════════════════════════════════════ */
+.elder-ringing-bar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 620px;
+  width: 90%;
+  background: rgba(180, 60, 20, 0.88);
+  color: #fff;
+  border: 2px solid rgba(255, 140, 60, 0.6);
+  border-radius: 12px;
+  padding: 10px 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 24px rgba(200, 80, 20, 0.35);
+  pointer-events: auto;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.elder-ringing-bar--pulse {
+  background: rgba(210, 70, 20, 0.95);
+  border-color: rgba(255, 160, 40, 0.85);
+  box-shadow: 0 0 36px rgba(220, 90, 20, 0.55), 0 0 8px rgba(255, 180, 40, 0.3);
+}
+
+.elder-ringing-bar__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  animation: ringIconShake 0.5s ease-in-out infinite;
+}
+
+@keyframes ringIconShake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-5deg) scale(1.1); }
+  75% { transform: rotate(5deg) scale(1.1); }
+}
+
+.elder-ringing-bar__text {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-body, inherit);
+}
+
+.elder-ringing-bar__eta {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+/* 时间地点面板 */
+.elder-hud-time {
+  background: rgba(42, 30, 18, 0.78);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.35);
+  border-radius: 10px;
+  padding: 10px 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  min-width: 140px;
+}
+
+.elder-hud-time__clock {
+  font-family: var(--font-family-title);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+
+.elder-hud-time__period {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.elder-hud-time__location {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: rgba(255, 230, 180, 0.95);
+}
+
+.elder-hud-time__progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 244, 210, 0.15);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.elder-hud-time__progress-fill {
+  height: 100%;
+  background: rgba(255, 200, 120, 0.8);
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+/* 五维状态面板（紧凑角标） */
+.elder-hud-status {
+  background: rgba(42, 30, 18, 0.78);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 130px;
+}
+
+.elder-hud-status__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.elder-hud-status__label {
+  font-size: 13px;
+  width: 32px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.elder-hud-status__bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 244, 210, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.elder-hud-status__bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease, background-color 0.4s ease;
+}
+
+.elder-hud-status__value {
+  font-size: 13px;
+  font-weight: 700;
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.elder-hud-status__bar-fill--normal {
+  background: rgba(255, 200, 120, 0.85);
+}
+
+.elder-hud-status__bar-fill--warning {
+  background: rgba(255, 140, 80, 0.9);
+}
+
+.elder-hud-status__bar-fill--danger {
+  background: rgba(255, 90, 70, 0.9);
+}
+
+.elder-hud-status__bar-fill--good {
+  background: rgba(140, 200, 120, 0.85);
+}
+
+/* ── 旁白框（底部） ── */
+.elder-narration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 16px 20px 24px;
+  pointer-events: none;
+}
+
+.elder-narration__box {
+  background: rgba(42, 30, 18, 0.78);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.35);
+  border-radius: 12px;
+  padding: 16px 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  max-width: 720px;
+  margin: 0 auto;
+  pointer-events: auto;
+  min-height: 60px;
+}
+
+.elder-narration__text {
+  font-size: 22px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #fff7e6;
+}
+
+.elder-narration__hint {
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 230, 180, 0.7);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.elder-narration__traveling {
+  font-size: 20px;
+  color: rgba(255, 220, 160, 0.9);
+  font-style: italic;
+}
+
+/* ── 移动中指示 ── */
+.elder-travel-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  background: rgba(42, 30, 18, 0.85);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.4);
+  border-radius: 16px;
+  padding: 24px 40px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.elder-travel-indicator__text {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.elder-travel-indicator__subtext {
+  font-size: 16px;
+  color: rgba(255, 220, 160, 0.8);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ── 开场过场 ── */
+.elder-opening {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 14, 8, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.elder-opening__card {
+  background: rgba(42, 30, 18, 0.88);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.4);
+  border-radius: 16px;
+  padding: 40px 48px;
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+.elder-opening__title {
+  font-family: var(--font-family-title);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0 0 12px 0;
+  color: #fff7e6;
+}
+
+.elder-opening__subtitle {
+  font-size: 18px;
+  color: rgba(255, 220, 160, 0.85);
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.elder-opening__body {
+  font-size: 18px;
+  line-height: 1.8;
+  color: rgba(255, 240, 210, 0.9);
+  margin: 0 0 32px 0;
+  text-align: left;
+}
+
+.elder-opening__button {
+  padding: 16px 48px;
+  background: rgba(180, 140, 90, 0.9);
+  color: #FFF8E7;
+  border: 2px solid rgba(255, 220, 160, 0.6);
+  border-radius: 12px;
+  font-family: var(--font-family-body);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.25s ease;
+}
+
+.elder-opening__button:hover {
+  background: rgba(200, 160, 100, 1);
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.elder-opening__button:active {
+  transform: scale(0.97);
+}
+
+/* ── 场景过渡遮罩 ── */
+.elder-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: #1a1210;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.elder-transition--fade-out {
+  opacity: 0;
+}
+
+.elder-transition--fade-in {
+  opacity: 1;
+}
+
+/* ── 眼镜模糊雾化遮罩（模拟老化视力：柔光+散射+边缘模糊） ── */
+.elder-fog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  background: radial-gradient(ellipse at center, rgba(255, 245, 230, 0.12), rgba(255, 240, 220, 0.35));
+  backdrop-filter: blur(4px) contrast(0.85) brightness(1.15);
+  -webkit-backdrop-filter: blur(4px) contrast(0.85) brightness(1.15);
+  pointer-events: none;
+  animation: elder-fog-in 0.8s ease;
+}
+
+@keyframes elder-fog-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(4px) contrast(0.85) brightness(1.15); }
+}
+
+/* 眼镜逐渐变清晰动画（2秒） */
+.elder-fog-overlay--clearing {
+  animation: elder-fog-clear 2s ease-in forwards;
+}
+
+@keyframes elder-fog-clear {
+  0% { opacity: 1; backdrop-filter: blur(4px) contrast(0.85) brightness(1.15); }
+  40% { opacity: 0.7; backdrop-filter: blur(2.5px) contrast(0.9) brightness(1.1); }
+  75% { opacity: 0.3; backdrop-filter: blur(1px) contrast(0.95) brightness(1.05); }
+  100% { opacity: 0; backdrop-filter: blur(0px) contrast(1) brightness(1); }
+}
+
+/* ── 碎片收集通知 ── */
+.elder-fragment-toast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  background: rgba(42, 30, 18, 0.9);
+  color: #fff7e6;
+  border: 1.5px solid rgba(255, 200, 120, 0.6);
+  border-radius: 16px;
+  padding: 24px 36px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  animation: elder-fragment-appear 0.6s ease forwards;
+}
+
+@keyframes elder-fragment-appear {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.elder-fragment-toast__title {
+  font-family: var(--font-family-title);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: rgba(255, 220, 160, 1);
+}
+
+.elder-fragment-toast__text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 240, 210, 0.9);
+  font-style: italic;
+}
+
+/* ── CSS占位背景（无图时使用） ── */
+.elder-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-placeholder__emoji {
+  font-size: 80px;
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 辅助操作面板（底部热点补充） ── */
+.elder-actions-bar {
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 260px;
+  max-height: 50vh;
+}
+
+.elder-actions-bar__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 45vh;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 244, 210, 0.2) transparent;
+  padding-right: 4px;
+}
+
+.elder-actions-bar__scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.elder-actions-bar__scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elder-actions-bar__scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 244, 210, 0.2);
+  border-radius: 2px;
+}
+
+.elder-actions-bar__item {
+  padding: clamp(6px, 0.7vw, 8px) clamp(10px, 1.2vw, 14px);
+  background: rgba(42, 30, 18, 0.7);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.25);
+  border-radius: 8px;
+  font-size: clamp(12px, 1.2vw, 14px);
+  font-weight: 500;
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  text-align: left;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  line-height: 1.4;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.elder-actions-bar__item:hover {
+  background: rgba(60, 45, 28, 0.85);
+  border-color: rgba(255, 244, 210, 0.4);
+}
+
+.elder-actions-bar__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.elder-actions-bar__item--completed {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.elder-actions-bar__item--cooldown {
+  opacity: 0.55;
+  color: rgba(255, 220, 160, 0.7);
+}
+
+.elder-actions-bar__item--waiting {
+  border-color: rgba(220, 190, 110, 0.5);
+  color: rgba(255, 220, 150, 0.9);
+  background: rgba(80, 60, 30, 0.7);
+}
+
+.elder-actions-bar__item--waiting:hover {
+  border-color: rgba(220, 190, 110, 0.7);
+  background: rgba(100, 75, 35, 0.8);
+}
+
+.elder-actions-bar__label {
+  font-size: 11px;
+  color: rgba(255, 220, 160, 0.6);
+  margin-bottom: 4px;
+  padding-left: 14px;
+}
+
+/* ── 迷你地图 ── */
+.elder-minimap {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  z-index: 15;
+  background: rgba(42, 30, 18, 0.78);
+  border: 1px solid rgba(255, 244, 210, 0.35);
+  border-radius: 10px;
+  padding: 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.elder-minimap__title {
+  font-size: 11px;
+  color: rgba(255, 220, 160, 0.7);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.elder-minimap__grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.elder-minimap__row {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.elder-minimap__node {
+  width: 36px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 244, 210, 0.8);
+  background: rgba(80, 60, 40, 0.6);
+  border: 1px solid rgba(255, 244, 210, 0.2);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.elder-minimap__node--current {
+  background: rgba(180, 140, 90, 0.9);
+  border-color: rgba(255, 220, 160, 0.8);
+  color: #fff7e6;
+  box-shadow: 0 0 8px rgba(255, 200, 120, 0.4);
+}
+
+.elder-minimap__node--visited {
+  background: rgba(100, 85, 60, 0.7);
+  border-color: rgba(200, 180, 140, 0.4);
+}
+
+.elder-minimap__connector {
+  width: 8px;
+  height: 2px;
+  background: rgba(255, 244, 210, 0.2);
+}
+
+/* ── 结算页面 ── */
+.elder-ending {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  background: rgba(30, 22, 14, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.elder-ending__hero {
+  width: 100%;
+  max-width: 700px;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.elder-ending__hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.elder-ending__hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(42, 30, 18, 0.2) 0%,
+    rgba(42, 30, 18, 0.7) 70%,
+    rgba(42, 30, 18, 0.9) 100%
+  );
+}
+
+.elder-ending__hero-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px 24px 24px;
+  text-align: center;
+}
+
+.elder-ending__title {
+  font-family: var(--font-family-title);
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFF8E7;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.1em;
+  margin: 0 0 8px 0;
+}
+
+.elder-ending__subtitle {
+  font-size: 18px;
+  color: rgba(255, 248, 231, 0.8);
+  font-style: italic;
+  margin: 0;
+}
+
+.elder-ending__card {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(42, 30, 18, 0.85);
+  border: 1px solid rgba(255, 244, 210, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.elder-ending__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.elder-ending__stat {
+  text-align: center;
+  padding: 10px 6px;
+  background: rgba(245, 230, 200, 0.08);
+  border-radius: 8px;
+}
+
+.elder-ending__stat-label {
+  font-size: 14px;
+  color: rgba(255, 220, 160, 0.7);
+  margin-bottom: 4px;
+}
+
+.elder-ending__stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff7e6;
+}
+
+.elder-ending__message {
+  font-size: 18px;
+  line-height: 1.9;
+  color: rgba(255, 240, 210, 0.85);
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── v6.4: 次级结局印记卡片 ── */
+.elder-ending__secondary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.elder-ending__secondary-item {
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(245, 230, 204, 0.06);
+  border: 1px solid rgba(200, 168, 124, 0.15);
+  transition: border-color 0.2s;
+}
+
+.elder-ending__secondary-item:hover {
+  border-color: rgba(200, 168, 124, 0.35);
+}
+
+.elder-ending__secondary-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #C8A87C;
+  margin-bottom: 4px;
+}
+
+.elder-ending__secondary-subtitle {
+  font-size: 14px;
+  color: rgba(205, 190, 160, 0.85);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.elder-ending__secondary-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(220, 210, 190, 0.7);
+}
+
+.elder-ending__fragments-title {
+  text-align: center;
+  font-size: 18px;
+  color: rgba(255, 220, 160, 0.9);
+  margin: 0 0 14px 0;
+  font-family: var(--font-family-title);
+  letter-spacing: 0.05em;
+}
+
+.elder-ending__fragment {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(245, 230, 200, 0.08);
+  border-radius: 10px;
+  align-items: center;
+}
+
+.elder-ending__fragment-img {
+  width: 72px;
+  height: 50px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(180, 150, 110, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+
+.elder-ending__fragment-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(180, 150, 110, 0.2);
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 8px rgba(120, 90, 50, 0.15);
+}
+
+.elder-ending__fragment-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff7e6;
+  margin-bottom: 3px;
+}
+
+.elder-ending__fragment-text {
+  font-size: 14px;
+  color: rgba(255, 230, 180, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.elder-ending__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+}
+
+.elder-ending__btn-primary {
+  width: 100%;
+  max-width: 340px;
+  padding: 16px 40px;
+  background: rgba(180, 140, 90, 0.9);
+  color: #FFF8E7;
+  border: 2px solid rgba(255, 220, 160, 0.6);
+  border-radius: 12px;
+  font-family: var(--font-family-body);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.25s ease;
+}
+
+.elder-ending__btn-primary:hover {
+  background: rgba(200, 160, 100, 1);
+  transform: scale(1.02);
+}
+
+.elder-ending__btn-secondary {
+  width: 100%;
+  max-width: 340px;
+  padding: 14px 30px;
+  background: transparent;
+  color: rgba(255, 220, 160, 0.9);
+  border: 1.5px solid rgba(180, 140, 90, 0.6);
+  border-radius: 12px;
+  font-family: var(--font-family-body);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.elder-ending__btn-secondary:hover {
+  border-color: rgba(255, 220, 160, 0.9);
+  background: rgba(180, 140, 90, 0.15);
+}
+
+.elder-ending__btn-ghost {
+  padding: 10px 24px;
+  background: transparent;
+  color: rgba(255, 220, 160, 0.6);
+  border: none;
+  font-family: var(--font-family-body);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.elder-ending__btn-ghost:hover {
+  color: rgba(255, 220, 160, 0.9);
+}
+
+/* ── 眼镜模糊效果（作用于视口容器，配合 fog overlay 使用，1s 平滑过渡） ── */
+.elder-blur-effect {
+  filter: blur(3px) brightness(0.92);
+  transition: filter 1s ease;
+}
+
+/* ── 夜间休息提示 ── */
+.elder-night-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  background: rgba(42, 30, 18, 0.9);
+  color: #fff7e6;
+  border: 1px solid rgba(255, 244, 210, 0.4);
+  border-radius: 16px;
+  padding: 24px 36px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.elder-night-hint__text {
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(255, 220, 160, 0.9);
+}
+
+.elder-night-hint__action {
+  font-size: 16px;
+  color: rgba(255, 244, 210, 0.7);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════
+ * v5.2 新增样式
+ * ═══════════════════════════════════════════════ */
+
+/* ── 16:9 场景视口容器（解决 cover 裁切导致坐标偏移） ── */
+.elder-scene-viewport {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 填充视口但保持 16:9 */
+  width: 100vw;
+  height: 100vh;
+  max-width: calc(100vh * 16 / 9);
+  max-height: calc(100vw * 9 / 16);
+  overflow: hidden;
+  background: #2a1e12;
+  transition: filter 0.6s ease;
+}
+
+/* ── 旁白状态文本（低体力/高孤独等） ── */
+.elder-narration__status {
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 180, 120, 0.9);
+  font-style: italic;
+}
+
+/* 旁白体力不足文本样式 */
+.elder-narration__text--strain {
+  color: rgba(255, 180, 150, 0.95);
+  font-style: italic;
+}
+
+/* ── 旁白确认按钮行 ── */
+.elder-narration__confirm-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 244, 210, 0.15);
+}
+
+.elder-narration__confirm-btn {
+  padding: 8px 32px;
+  background: rgba(180, 140, 90, 0.85);
+  color: #FFF8E7;
+  border: 1.5px solid rgba(255, 220, 160, 0.6);
+  border-radius: 8px;
+  font-family: var(--font-family-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.elder-narration__confirm-btn:hover {
+  background: rgba(200, 160, 100, 0.95);
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.elder-narration__confirm-btn:active {
+  transform: scale(0.97);
+}
+
+.elder-narration__confirm-hint {
+  font-size: 12px;
+  color: rgba(255, 220, 160, 0.45);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════
+ * 回忆碎片图文弹窗（MemoryFragmentToast）
+ * ═══════════════════════════════════════════════ */
+
+/* 全屏遮罩层（阻止背景点击） */
+.elder-fragment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 14, 8, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: elder-fragment-fade-in 0.35s ease forwards;
+}
+
+@keyframes elder-fragment-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 弹窗卡片 */
+.elder-fragment-dialog {
+  background: rgba(42, 30, 18, 0.92);
+  border: 1.5px solid rgba(255, 200, 120, 0.5);
+  border-radius: 16px;
+  max-width: 560px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), 0 0 40px rgba(255, 180, 100, 0.08);
+  display: flex;
+  flex-direction: column;
+  animation: elder-fragment-scale-in 0.4s ease forwards;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@keyframes elder-fragment-scale-in {
+  0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 图片容器（16:9 比例） */
+.elder-fragment-dialog__image-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #2a1e12;
+}
+
+.elder-fragment-dialog__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+}
+
+.elder-fragment-dialog__image--loaded {
+  opacity: 1;
+}
+
+/* CSS fallback（图片加载失败时） */
+.elder-fragment-dialog__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-fragment-dialog__fallback-icon {
+  font-size: 48px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 加载中占位 */
+.elder-fragment-dialog__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-fragment-dialog__loading-text {
+  font-size: 16px;
+  color: rgba(255, 240, 210, 0.5);
+  font-style: italic;
+}
+
+/* 文字内容区 */
+.elder-fragment-dialog__content {
+  padding: 20px 24px;
+  overflow-y: auto;
+  max-height: 260px;
+}
+
+.elder-fragment-dialog__title {
+  font-family: var(--font-family-title);
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255, 220, 160, 1);
+  margin: 0 0 8px 0;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+
+.elder-fragment-dialog__desc {
+  font-size: 15px;
+  color: rgba(255, 240, 210, 0.7);
+  margin: 0 0 10px 0;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.elder-fragment-dialog__text {
+  font-size: 17px;
+  color: rgba(255, 244, 220, 0.9);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* 操作区 */
+.elder-fragment-dialog__actions {
+  padding: 16px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 200, 120, 0.15);
+}
+
+.elder-fragment-dialog__confirm {
+  padding: 12px 48px;
+  background: rgba(180, 140, 90, 0.9);
+  color: #FFF8E7;
+  border: 2px solid rgba(255, 220, 160, 0.6);
+  border-radius: 12px;
+  font-family: var(--font-family-body);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.elder-fragment-dialog__confirm:hover {
+  background: rgba(200, 160, 100, 1);
+  transform: scale(1.04);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.elder-fragment-dialog__confirm:active {
+  transform: scale(0.97);
+}
+
+.elder-fragment-dialog__hint {
+  font-size: 12px;
+  color: rgba(255, 220, 160, 0.4);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════
+ * v5.6 休眠过渡动画（休息到明天）
+ * ═══════════════════════════════════════════════ */
+
+.elder-sleep-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.elder-sleep-overlay--fade-out {
+  background: rgba(10, 8, 4, 0);
+  animation: elder-sleep-fade-to-black 1.5s ease-in forwards;
+}
+
+.elder-sleep-overlay--dark {
+  background: rgba(10, 8, 4, 1);
+}
+
+.elder-sleep-overlay--fade-in {
+  background: rgba(10, 8, 4, 1);
+  animation: elder-sleep-fade-to-morning 1.5s ease-out forwards;
+}
+
+.elder-sleep-overlay__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #FFF8E7;
+  font-size: 24px;
+  font-family: var(--font-family-title);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.elder-sleep-overlay__moon,
+.elder-sleep-overlay__sun {
+  font-size: 48px;
+  animation: elder-sleep-icon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes elder-sleep-fade-to-black {
+  from { background: rgba(10, 8, 4, 0); }
+  to { background: rgba(10, 8, 4, 1); }
+}
+
+@keyframes elder-sleep-fade-to-morning {
+  from { background: rgba(10, 8, 4, 1); }
+  to { background: rgba(10, 8, 4, 0); }
+}
+
+@keyframes elder-sleep-icon-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ═══════════════════════════════════════════════
+ * v5.7 结局 CG 大图展示
+ * ═══════════════════════════════════════════════ */
+
+.elder-ending-cg {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  animation: elder-cg-fade-in 1s ease;
+}
+
+.elder-ending-cg__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(20, 14, 8, 0.75) 0%,
+    rgba(20, 14, 8, 0.2) 50%,
+    rgba(20, 14, 8, 0.05) 100%
+  );
+}
+
+.elder-ending-cg__content {
+  position: relative;
+  text-align: center;
+  padding: 40px 32px 48px;
+  max-width: 640px;
+  width: 100%;
+  z-index: 1;
+}
+
+.elder-ending-cg__title {
+  font-family: var(--font-family-title);
+  font-size: 42px;
+  font-weight: 700;
+  color: #FFF8E7;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.1em;
+  margin: 0 0 12px 0;
+  animation: elder-cg-title-up 0.8s ease 0.3s both;
+}
+
+.elder-ending-cg__subtitle {
+  font-size: 20px;
+  color: rgba(255, 248, 231, 0.85);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+  font-style: italic;
+  animation: elder-cg-title-up 0.8s ease 0.5s both;
+}
+
+.elder-ending-cg__btn {
+  padding: 14px 48px;
+  background: rgba(180, 140, 90, 0.85);
+  color: #FFF8E7;
+  border: 2px solid rgba(255, 220, 160, 0.6);
+  border-radius: 12px;
+  font-family: var(--font-family-body);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.25s ease;
+  animation: elder-cg-title-up 0.8s ease 0.7s both;
+}
+
+.elder-ending-cg__btn:hover {
+  background: rgba(200, 160, 100, 1);
+  transform: scale(1.04);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* v6.4: 子CG标签 */
+.elder-ending-cg__secondary-label {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 6px 22px;
+  border-radius: 20px;
+  background: rgba(30, 20, 10, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 168, 124, 0.35);
+  color: #C8A87C;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: elder-cg-title-up 0.6s ease-out both;
+}
+
+/* v6.4: 子CG正文 */
+.elder-ending-cg__body {
+  font-size: 17px;
+  color: rgba(245, 230, 204, 0.8);
+  line-height: 1.85;
+  max-width: 620px;
+  text-align: center;
+  margin: 16px 0 28px 0;
+  animation: elder-cg-title-up 0.8s 0.2s ease-out both;
+}
+
+@keyframes elder-cg-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes elder-cg-title-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 响应式适配（v6.5 移动端热点自适应 + 触控优化） ── */
+/* ===== 手机竖屏 (< 768px) ===== */
+@media (max-width: 768px) {
+  /* HUD 紧凑布局 */
+  .elder-hud-top {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .elder-hud-time {
+    min-width: 110px;
+    padding: 8px 10px;
+  }
+
+  .elder-hud-time__clock {
+    font-size: 20px;
+  }
+
+  .elder-hud-time__period {
+    font-size: 11px;
+  }
+
+  .elder-hud-time__location {
+    font-size: 12px;
+  }
+
+  .elder-hud-status {
+    min-width: 100px;
+    padding: 8px 8px;
+  }
+
+  .elder-hud-status__label {
+    font-size: 11px;
+    width: 24px;
+  }
+
+  .elder-hud-status__value {
+    font-size: 11px;
+    width: 20px;
+  }
+
+  .elder-hud-status__bar {
+    height: 5px;
+  }
+
+  /* 旁白框缩小 */
+  .elder-narration {
+    padding: 10px 12px 16px;
+  }
+
+  .elder-narration__box {
+    padding: 12px 14px;
+  }
+
+  .elder-narration__text {
+    font-size: 17px;
+  }
+
+  .elder-narration__hint {
+    font-size: 13px;
+  }
+
+  .elder-narration__status {
+    font-size: 14px;
+  }
+
+  .elder-narration__traveling {
+    font-size: 17px;
+  }
+
+  .elder-narration__confirm-btn {
+    padding: 6px 22px;
+    font-size: 14px;
+  }
+
+  .elder-narration__confirm-hint {
+    display: none; /* 键盘提示在手机上无意义 */
+  }
+
+  /* 操作面板 */
+  .elder-actions-bar {
+    bottom: 60px;
+    max-width: 180px;
+  }
+
+  /* 迷你地图 */
+  .elder-minimap {
+    bottom: 60px;
+    right: 8px;
+  }
+
+  /* 开场卡片 */
+  .elder-opening__card {
+    padding: 28px 24px;
+  }
+
+  .elder-opening__title {
+    font-size: 26px;
+  }
+
+  .elder-opening__subtitle {
+    font-size: 15px;
+  }
+
+  .elder-opening__body {
+    font-size: 15px;
+  }
+
+  .elder-opening__button {
+    font-size: 18px;
+    padding: 14px 36px;
+  }
+
+  /* 结局标题 */
+  .elder-ending__title {
+    font-size: 24px;
+  }
+
+  /* 移动指示器 */
+  .elder-travel-indicator {
+    padding: 18px 28px;
+  }
+
+  .elder-travel-indicator__text {
+    font-size: 18px;
+  }
+
+  .elder-travel-indicator__subtext {
+    font-size: 14px;
+  }
+
+  /* 碎片弹窗适配 */
+  .elder-fragment-dialog {
+    max-width: 94vw;
+    width: 94vw;
+  }
+
+  .elder-fragment-dialog__content {
+    padding: 14px 16px;
+    max-height: 180px;
+  }
+
+  .elder-fragment-dialog__title {
+    font-size: 19px;
+  }
+
+  .elder-fragment-dialog__desc {
+    font-size: 13px;
+  }
+
+  .elder-fragment-dialog__text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .elder-fragment-dialog__confirm {
+    padding: 10px 36px;
+    font-size: 16px;
+  }
+
+  /* 通知条 */
+  .elder-notification-stack {
+    max-width: 90vw;
+    top: 6px;
+  }
+
+  .elder-notification-bar {
+    padding: 8px 14px;
+  }
+
+  .elder-notification-bar__text {
+    font-size: 0.8rem;
+  }
+
+  /* 退出按钮成本文字 */
+  .elder-exit__cost {
+    font-size: clamp(10px, 1.2vw, 12px);
+  }
+}
+
+/* ===== 超小屏 (< 360px) ===== */
+@media (max-width: 360px) {
+  .elder-hud-top {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .elder-hud-time__clock {
+    font-size: 17px;
+  }
+
+  .elder-hud-time__period {
+    font-size: 10px;
+  }
+
+  .elder-hud-time__location {
+    font-size: 11px;
+  }
+
+  .elder-hud-status {
+    min-width: 90px;
+  }
+
+  .elder-hud-status__label {
+    font-size: 10px;
+    width: 22px;
+  }
+
+  .elder-narration__text {
+    font-size: 15px;
+  }
+
+  .elder-narration__hint {
+    font-size: 12px;
+  }
+
+  .elder-actions-bar {
+    max-width: 150px;
+    bottom: 55px;
+  }
+
+  .elder-minimap {
+    bottom: 55px;
+  }
+}
+
+/* ══════════════════════════════════════
+   护工用餐邀请对话框
+   ══════════════════════════════════════ */
+
+.elder-meal-invitation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(18, 12, 6, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  animation: mealFadeIn 0.3s ease;
+}
+
+@keyframes mealFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.elder-meal-invitation-dialog {
+  background: linear-gradient(145deg, #F5EDDE, #EBE0CC);
+  border: 2px solid #C8A87C;
+  border-radius: 20px;
+  padding: 36px 40px 28px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: mealDialogIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mealDialogIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.elder-meal-invitation-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: mealIconBounce 0.6s ease;
+}
+
+@keyframes mealIconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.elder-meal-invitation-title {
+  font-size: 24px;
+  color: #5C3D2E;
+  margin: 0 0 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.elder-meal-invitation-text {
+  font-size: 17px;
+  color: #6B4F3A;
+  line-height: 1.7;
+  margin: 0 0 28px;
+  padding: 0 8px;
+}
+
+.elder-meal-invitation-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.elder-meal-invitation-btn {
+  padding: 14px 32px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.elder-meal-invitation-btn--follow {
+  background: linear-gradient(135deg, #C8A87C, #B8936A);
+  color: #FFF;
+  box-shadow: 0 4px 16px rgba(168, 124, 80, 0.4);
+}
+
+.elder-meal-invitation-btn--follow:hover {
+  background: linear-gradient(135deg, #D4B68C, #C4A07A);
+  box-shadow: 0 6px 20px rgba(168, 124, 80, 0.55);
+  transform: translateY(-1px);
+}
+
+.elder-meal-invitation-btn--follow:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(168, 124, 80, 0.3);
+}
+
+.elder-meal-invitation-btn--decline {
+  background: rgba(180, 160, 140, 0.25);
+  color: #7A5C40;
+  border: 1.5px solid rgba(180, 150, 120, 0.5);
+}
+
+.elder-meal-invitation-btn--decline:hover {
+  background: rgba(180, 160, 140, 0.4);
+  border-color: rgba(180, 150, 120, 0.7);
+}
+
+.elder-meal-invitation-hint {
+  font-size: 12px;
+  color: #AAA;
+  margin: 16px 0 0;
+  letter-spacing: 0.5px;
+}
+
+/* 饥饿状态下的餐食提示高亮样式 */
+.elder-actions-bar__item--meal-delivery {
+  background: linear-gradient(135deg, #F5E6CC, #E8D5B0) !important;
+  border-color: #C8A87C !important;
+  color: #2563EB !important;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: mealPulse 2s ease-in-out infinite;
+}
+
+@keyframes mealPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 168, 124, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(200, 168, 124, 0); }
+}
+
+/* v6.3-v3: 来电接听按钮（电话角响铃时的可操作按钮） */
+.elder-actions-bar__item--incoming-call {
+  background: linear-gradient(135deg, #E0F2FE, #BAE6FD) !important;
+  border-color: #38BDF8 !important;
+  color: #0284C7 !important;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: incomingCallPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes incomingCallPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+}
+
+/* ══════════════════════════════════════
+   v6.4: 通话聊天对话框
+   ══════════════════════════════════════ */
+
+.elder-chat-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4600;
+  background: rgba(12, 8, 4, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dialingFadeIn 0.3s ease-out;
+}
+
+.elder-chat-dialog {
+  background: linear-gradient(180deg, #2A1E12 0%, #1A1008 100%);
+  border: 1px solid rgba(200, 168, 124, 0.25);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: dialingDialogPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.elder-chat-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(200, 168, 124, 0.15);
+}
+
+.elder-chat-dialog__caller {
+  font-size: 15px;
+  font-weight: 600;
+  color: #C8A87C;
+}
+
+.elder-chat-dialog__hangup {
+  background: rgba(220, 80, 60, 0.20);
+  border: 1px solid rgba(220, 80, 60, 0.5);
+  color: #FCA5A5;
+  padding: 6px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.elder-chat-dialog__hangup:hover { background: rgba(220, 80, 60, 0.35); }
+
+.elder-chat-dialog__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.elder-chat-bubble {
+  max-width: 85%;
+  animation: chatBubbleIn 0.4s ease-out both;
+}
+
+@keyframes chatBubbleIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.elder-chat-bubble--elder { align-self: flex-end; }
+.elder-chat-bubble--family { align-self: flex-start; }
+
+.elder-chat-bubble__label {
+  font-size: 11px;
+  margin-bottom: 3px;
+  opacity: 0.55;
+}
+
+.elder-chat-bubble--elder .elder-chat-bubble__label {
+  text-align: right;
+  color: #C8A87C;
+  padding-right: 2px;
+}
+
+.elder-chat-bubble--family .elder-chat-bubble__label {
+  text-align: left;
+  color: #8EC8B2;
+  padding-left: 2px;
+}
+
+.elder-chat-bubble__text {
+  padding: 10px 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.elder-chat-bubble--elder .elder-chat-bubble__text {
+  background: rgba(200, 168, 124, 0.18);
+  border: 1px solid rgba(200, 168, 124, 0.25);
+  color: #F5E6CC;
+  border-bottom-right-radius: 4px;
+}
+
+.elder-chat-bubble--family .elder-chat-bubble__text {
+  background: rgba(142, 200, 178, 0.12);
+  border: 1px solid rgba(142, 200, 178, 0.20);
+  color: #CFE8DC;
+  border-bottom-left-radius: 4px;
+}
+
+.elder-chat-typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(142, 200, 178, 0.10);
+  border: 1px solid rgba(142, 200, 178, 0.15);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.elder-chat-typing__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(142, 200, 178, 0.6);
+  animation: chatTypingDot 1.4s ease-in-out infinite;
+}
+.elder-chat-typing__dot:nth-child(1) { animation-delay: 0s; }
+.elder-chat-typing__dot:nth-child(2) { animation-delay: 0.22s; }
+.elder-chat-typing__dot:nth-child(3) { animation-delay: 0.44s; }
+
+@keyframes chatTypingDot {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ══════════════════════════════════════
+   v6.3-v3: 拨号等待动画（call_family 拨号中）
+   ══════════════════════════════════════ */
+
+.elder-dialing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(18, 12, 8, 0.70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dialingFadeIn 0.3s ease-out;
+}
+
+@keyframes dialingFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.elder-dialing-dialog {
+  background: linear-gradient(135deg, #FFF8F0, #F5E6CC);
+  border: 1px solid #C8A87C;
+  border-radius: 24px;
+  padding: 48px 56px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(200, 168, 124, 0.3);
+  animation: dialingDialogPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes dialingDialogPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.elder-dialing-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: dialingIconShake 0.6s ease-in-out infinite;
+}
+
+@keyframes dialingIconShake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-6deg) scale(1.05); }
+  75% { transform: rotate(6deg) scale(1.05); }
+}
+
+.elder-dialing-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #5D4037;
+  margin: 0 0 12px 0;
+  letter-spacing: 2px;
+}
+
+.elder-dialing-text {
+  font-size: 16px;
+  color: #6B5B4F;
+  line-height: 1.7;
+  margin: 0 0 28px 0;
+}
+
+/* 拨号中的三点动画 */
+.elder-dialing-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.elder-dialing-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #C8A87C;
+  animation: dialingDotBounce 1.4s ease-in-out infinite;
+}
+
+.elder-dialing-dot:nth-child(1) { animation-delay: 0s; }
+.elder-dialing-dot:nth-child(2) { animation-delay: 0.2s; }
+.elder-dialing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dialingDotBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1.2); opacity: 1; }
+}
+
+/* ══════════════════════════════════════
+   v6.7: 视频拨号动画（平板视频通话拨号中）
+   — 与电话拨号结构相同，采用视频通话主题配色（蓝/青色渐变） ══════════════════════════════════════ */
+
+/* 视频拨号叠加层 — 复用电拨号基础布局，覆盖为视频主题 */
+.elder-dialing-overlay--video {
+  background: rgba(10, 18, 30, 0.72);
+}
+
+.elder-dialing-dialog--video {
+  background: linear-gradient(135deg, #E8F4FD, #CCE4F0);
+  border: 1px solid #7BA7C4;
+  box-shadow: 0 24px 64px rgba(0, 20, 40, 0.35), 0 0 0 1px rgba(120, 160, 200, 0.3);
+}
+
+/* 视频拨号图标 — 平板 + 脉冲光环 */
+.elder-dialing-icon--video {
+  animation: videoDialingIconPulse 1s ease-in-out infinite;
+}
+
+@keyframes videoDialingIconPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+/* 视频拨号标题 */
+.elder-dialing-dialog--video .elder-dialing-title {
+  color: #2C5A7A;
+}
+
+/* 视频拨号文本 */
+.elder-dialing-dialog--video .elder-dialing-text {
+  color: #4A6B82;
+}
+
+/* 视频拨号三点 — 蓝色系 */
+.elder-dialing-dot--video {
+  background: #5A9EC0;
+}
+
+/* 视频连接光晕 — 环绕拨号对话框的脉冲光圈 */
+.elder-dialing-dialog--video::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 30px;
+  border: 2px solid rgba(90, 158, 192, 0.25);
+  animation: videoRingPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes videoRingPulse {
+  0%, 100% { border-color: rgba(90, 158, 192, 0.15); transform: scale(1); }
+  50% { border-color: rgba(90, 158, 192, 0.4); transform: scale(1.008); }
+}
+
+/* ══════════════════════════════════════
+   v6.3-v3: 通话结果提示 Toast
+   ══════════════════════════════════════ */
+
+.elder-call-result {
+  position: fixed;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4500;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 620px;
+  width: 90%;
+  padding: 20px 28px;
+  border-radius: 18px;
+  background: rgba(42, 30, 18, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(200, 168, 124, 0.3);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  animation: callResultIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes callResultIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(30px) scale(0.9); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.elder-call-result__icon {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.elder-call-result__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.elder-call-result__status {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.elder-call-result--connected .elder-call-result__status {
+  color: #86EFAC;
+}
+
+.elder-call-result--missed .elder-call-result__status {
+  color: #FCA5A5;
+}
+
+.elder-call-result__text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(245, 230, 204, 0.85);
+}
+
+/* ══════════════════════════════════════
+   饿晕事件：强制治疗对话框
+   ══════════════════════════════════════ */
+
+.elder-fainting-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5100;
+  background: rgba(8, 4, 2, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  animation: faintingFadeIn 0.25s ease;
+}
+
+@keyframes faintingFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.elder-fainting-dialog {
+  background: linear-gradient(160deg, #3A2218, #2E1A10);
+  border: 2px solid #A06030;
+  border-radius: 20px;
+  padding: 36px 40px 28px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(160, 80, 40, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: faintingDialogIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes faintingDialogIn {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.elder-fainting-icon {
+  font-size: 52px;
+  margin-bottom: 8px;
+  animation: faintingIconShake 0.5s ease;
+}
+
+@keyframes faintingIconShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.elder-fainting-title {
+  font-size: 26px;
+  color: #F0A060;
+  margin: 0 0 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 8px rgba(200, 100, 40, 0.3);
+}
+
+.elder-fainting-text {
+  font-size: 16px;
+  color: #D4B896;
+  line-height: 1.8;
+  margin: 0 0 28px;
+  padding: 0 8px;
+}
+
+.elder-fainting-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.elder-fainting-btn {
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.elder-fainting-btn--feed {
+  background: linear-gradient(135deg, #E8A050, #D08030);
+  color: #FFF;
+  box-shadow: 0 4px 20px rgba(200, 120, 40, 0.5);
+}
+
+.elder-fainting-btn--feed:hover {
+  background: linear-gradient(135deg, #F0B860, #E09040);
+  box-shadow: 0 6px 24px rgba(200, 120, 40, 0.6);
+  transform: translateY(-1px);
+}
+
+.elder-fainting-btn--iv {
+  background: rgba(140, 180, 200, 0.2);
+  color: #A0D0E0;
+  border: 1.5px solid rgba(140, 180, 200, 0.5);
+}
+
+.elder-fainting-btn--iv:hover {
+  background: rgba(140, 180, 200, 0.35);
+  border-color: rgba(140, 180, 200, 0.7);
+}
+
+.elder-fainting-hint {
+  font-size: 12px;
+  color: #7A6050;
+  margin: 16px 0 0;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════
+   护工呼叫铃响应对话框
+   ══════════════════════════════════════ */
+
+.elder-caregiver-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(18, 12, 6, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  animation: caregiverFadeIn 0.25s ease;
+}
+
+@keyframes caregiverFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.elder-caregiver-dialog {
+  background: linear-gradient(145deg, #F5EDDE, #EBE0CC);
+  border: 2px solid #B8D0C8;
+  border-radius: 20px;
+  padding: 32px 36px 24px;
+  max-width: 480px;
+  width: 92%;
+  text-align: center;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: caregiverDialogIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes caregiverDialogIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.elder-caregiver-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.elder-caregiver-title {
+  font-size: 22px;
+  color: #4A6B5D;
+  margin: 0 0 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.elder-caregiver-text {
+  font-size: 16px;
+  color: #5C7A6B;
+  line-height: 1.6;
+  margin: 0 0 22px;
+}
+
+.elder-caregiver-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.elder-caregiver-grid .elder-caregiver-btn--secondary {
+  grid-column: 1 / -1;
+}
+
+.elder-caregiver-btn {
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid rgba(140, 170, 150, 0.5);
+  background: rgba(200, 220, 210, 0.3);
+  color: #3D5A4B;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.elder-caregiver-btn:hover {
+  background: rgba(180, 210, 195, 0.5);
+  border-color: rgba(120, 160, 140, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(100, 140, 120, 0.2);
+}
+
+.elder-caregiver-btn:active {
+  transform: translateY(1px);
+}
+
+.elder-caregiver-btn--secondary {
+  background: rgba(200, 190, 180, 0.25);
+  border-color: rgba(180, 170, 160, 0.4);
+  color: #8A7A6A;
+}
+
+.elder-caregiver-btn--secondary:hover {
+  background: rgba(200, 190, 180, 0.4);
+  border-color: rgba(180, 170, 160, 0.6);
+  color: #6A5A4A;
+}
+
+.elder-caregiver-hint {
+  font-size: 11px;
+  color: #B0B0B0;
+  margin: 8px 0 0;
+}
+
+/* ═══════════════════════════════════════
+   v6.6 平板视频通话对话框样式
+   ═══════════════════════════════════════ */
+
+.elder-video-call-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 14, 8, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.elder-video-call-overlay--visible {
+  opacity: 1;
+}
+
+.elder-video-call-card {
+  background: linear-gradient(145deg, #3A2A18, #2A1A0A);
+  border: 3px solid #5A4A38;
+  border-radius: 18px;
+  width: min(520px, 92vw);
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  transform: translateY(16px);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.elder-video-call-card--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 屏幕区域 */
+.elder-video-call-screen {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(160deg, #1A2840, #0D1520);
+  border-bottom: 2px solid #3A3020;
+  overflow: hidden;
+}
+
+.elder-video-call-screen--connecting {
+  background: linear-gradient(160deg, #1A2840, #0D1520);
+}
+
+.elder-video-call-screen--unstable {
+  animation: videoGlitch 0.3s ease-in-out infinite alternate;
+}
+
+.elder-video-call-screen--failed {
+  background: linear-gradient(160deg, #1A1A1A, #0D0D0D);
+}
+
+@keyframes videoGlitch {
+  0% { opacity: 1; filter: none; }
+  50% { opacity: 0.85; filter: brightness(1.1) saturate(0.8); }
+  100% { opacity: 0.95; filter: brightness(0.95) saturate(1.05); }
+}
+
+/* 连接中 */
+.elder-video-call-connecting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+}
+
+.elder-video-call-connecting-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px dashed rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: connectingPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes connectingPulse {
+  0%, 100% { transform: scale(1); border-color: rgba(255,255,255,0.1); }
+  50% { transform: scale(1.05); border-color: rgba(255,255,255,0.25); }
+}
+
+.elder-video-call-connecting-icon {
+  font-size: 32px;
+}
+
+.elder-video-call-connecting-text {
+  color: rgba(255,255,255,0.6);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+/* 视频画面区域 */
+.elder-video-call-video-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.elder-video-call-signal-warning {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 180, 40, 0.15);
+  border: 1px solid rgba(255, 180, 40, 0.3);
+  border-radius: 12px;
+  padding: 4px 14px;
+  color: #FFC040;
+  font-size: 13px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.elder-video-call-signal-icon {
+  font-size: 15px;
+}
+
+.elder-video-call-video-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.elder-video-call-tablet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.elder-video-call-family-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  background: rgba(100, 160, 140, 0.08);
+  border: 2px solid rgba(100, 160, 140, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-video-call-family-icon {
+  font-size: 48px;
+}
+
+.elder-video-call-self-preview {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.5);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-video-call-self-icon {
+  font-size: 22px;
+}
+
+/* 失败 */
+.elder-video-call-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+}
+
+.elder-video-call-failed-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.elder-video-call-failed-icon {
+  font-size: 36px;
+}
+
+.elder-video-call-failed-text {
+  color: rgba(255,255,255,0.5);
+  font-size: 15px;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+/* 字幕区域 */
+.elder-video-call-captions {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0,0,0,0.15);
+}
+
+.elder-video-call-caption {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  animation: captionIn 0.3s ease-out;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 85%;
+}
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.elder-video-call-caption--elder {
+  align-self: flex-end;
+  background: rgba(200, 168, 124, 0.12);
+  border: 1px solid rgba(200, 168, 124, 0.18);
+  flex-direction: row-reverse;
+}
+
+.elder-video-call-caption--family {
+  align-self: flex-start;
+  background: rgba(142, 200, 178, 0.1);
+  border: 1px solid rgba(142, 200, 178, 0.15);
+}
+
+.elder-video-call-caption-speaker {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+  min-width: 24px;
+  text-align: center;
+}
+
+.elder-video-call-caption-text {
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+
+/* 底部操作区 */
+.elder-video-call-actions {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.elder-video-call-cancel-hint {
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+}
+
+.elder-video-call-hangup {
+  background: rgba(220, 50, 50, 0.25);
+  border: 1.5px solid rgba(220, 50, 50, 0.5);
+  color: #FF7070;
+  font-size: 16px;
+  padding: 8px 36px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.elder-video-call-hangup:hover {
+  background: rgba(220, 50, 50, 0.4);
+  border-color: rgba(220, 50, 50, 0.7);
+  color: #FF9090;
+}
+
+.elder-video-call-close {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  padding: 8px 36px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.elder-video-call-close:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.9);
+}

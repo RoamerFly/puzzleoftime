@@ -1,0 +1,44 @@
+.hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: var(--spacing-xs);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.container {
+  cursor: pointer;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.container:hover {
+  background-color: rgba(139, 105, 20, 0.05);
+}
+
+.text {
+  font-size: 1.15rem;
+  line-height: 2;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  white-space: pre-line;
+  margin: 0;
+}
+
+.cursor {
+  color: var(--color-accent-warm);
+  font-weight: 300;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}

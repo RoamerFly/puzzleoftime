@@ -1,0 +1,12 @@
+﻿{
+  "runtime_asset_count": 79,
+  "scene_count": 12,
+  "anm_count": 31,
+  "clue_count": 15,
+  "act_count": 9,
+  "fx_count": 8,
+  "deprecated_count": 0,
+  "directory_png_count": 75,
+  "deprecated": [],
+  "scene_main": ["WangRoom.png", "LiCorridor.png", "ChenRoom.png"]
+}

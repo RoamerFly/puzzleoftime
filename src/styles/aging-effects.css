@@ -1,0 +1,72 @@
+/* === 衰老隐喻效果样式 === */
+
+/* 视觉模糊效果 */
+.aging-blur {
+  filter: blur(3px);
+  transition: filter 0.5s ease;
+}
+.aging-blur.piece-near-target {
+  filter: blur(1px);
+}
+.aging-blur.piece-correct {
+  filter: blur(0);
+}
+
+/* 手部震颤效果 - hover时随机偏移 */
+.aging-tremor:hover {
+  animation: agingTremor 0.3s ease infinite;
+}
+
+@keyframes agingTremor {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, 1px); }
+}
+
+/* 操作延迟效果 */
+.aging-delayed {
+  transition: transform 0.8s ease, opacity 0.8s ease !important;
+}
+
+/* 文字轻微抖动 */
+.aging-text-shake {
+  animation: textShake 4s ease-in-out infinite;
+}
+
+@keyframes textShake {
+  0%, 90%, 100% { transform: translate(0, 0); }
+  92% { transform: translate(0.5px, -0.5px); }
+  94% { transform: translate(-0.5px, 0.5px); }
+  96% { transform: translate(0.5px, 0.5px); }
+  98% { transform: translate(-0.5px, -0.5px); }
+}
+
+/* 整体模糊覆盖层 */
+.aging-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(62, 44, 28, 0.08) 70%,
+    rgba(62, 44, 28, 0.15) 100%
+  );
+  z-index: 100;
+}
+
+/* === 关闭所有衰老效果 === */
+[data-disable-effects="true"] .aging-blur,
+[data-disable-effects="true"] .aging-tremor,
+[data-disable-effects="true"] .aging-delayed,
+[data-disable-effects="true"] .aging-text-shake,
+[data-disable-effects="true"] .aging-overlay {
+  filter: none !important;
+  animation: none !important;
+  transition: all 0.2s ease !important;
+  display: none;
+}

@@ -1,0 +1,80 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-family-body);
+  font-weight: 500;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  text-decoration: none;
+  user-select: none;
+  letter-spacing: 0.03em;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+/* === 变体 === */
+.primary {
+  background-color: var(--color-accent-warm);
+  color: #FFF8E7;
+  border-color: var(--color-accent-warm);
+}
+.primary:hover:not(.disabled) {
+  background-color: #7A5B10;
+  border-color: #7A5B10;
+  box-shadow: var(--shadow-hover);
+}
+
+.secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+.secondary:hover:not(.disabled) {
+  background-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+.ghost:hover:not(.disabled) {
+  background-color: rgba(139, 105, 20, 0.08);
+  color: var(--color-accent-warm);
+}
+
+/* === 尺寸 === */
+.small {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.85rem;
+  min-height: 36px;
+}
+
+.medium {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 1rem;
+  min-height: var(--touch-target-min);
+}
+
+.large {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1.15rem;
+  min-height: 56px;
+  min-width: 200px;
+}
+
+/* === 禁用 === */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

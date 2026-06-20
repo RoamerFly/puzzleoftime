@@ -1,0 +1,120 @@
+/* === 时间压力条样式 · TimeBar.module.css === */
+
+.timeBarRoot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-time-bar, 110);
+  padding: 8px 24px;
+  background: rgba(255, 253, 245, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(200, 188, 168, 0.35);
+}
+
+.timeBarTrack {
+  position: relative;
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(200, 188, 168, 0.2);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.timeBarBg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(180, 160, 130, 0.08) 40px,
+      rgba(180, 160, 130, 0.08) 42px
+    );
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.timeBarFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 6px;
+  transition: width var(--anim-time-bar-update, 0.3s) linear;
+  z-index: 1;
+}
+
+/* 初始状态：0% 宽度 */
+.timeBarFill:not(.animated) {
+  width: 0%;
+}
+
+/* 初始化后：由 --time-percent 变量驱动 */
+.timeBarFill.animated {
+  width: var(--time-percent, 0%);
+  transition: width var(--anim-time-bar-update, 0.3s) linear;
+}
+
+/* ── 颜色状态 ── */
+.normal {
+  background: linear-gradient(
+    90deg,
+    #C49A3C 0%,
+    #D4AA5C 100%
+  );
+}
+
+.warning {
+  background: linear-gradient(
+    90deg,
+    #C49A3C 0%,
+    #B89A68 100%
+  );
+}
+
+.urgent {
+  background: linear-gradient(
+    90deg,
+    #B5655A 0%,
+    #C9806A 100%
+  );
+}
+
+.eventPulse {
+  background: linear-gradient(
+    90deg,
+    #B5655A 0%,
+    #D08070 100%
+  );
+  animation: urgent-pulse 1s ease-in-out infinite;
+}
+
+/* ── 状态标签 ── */
+.timeBarLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 0.65rem;
+  color: var(--color-text-light, #8A7A6A);
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+/* ── 刻度 ── */
+.timeBarScale {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.timeBarScale span {
+  font-size: 0.6rem;
+  color: var(--color-text-light, #8A7A6A);
+  opacity: 0.5;
+}

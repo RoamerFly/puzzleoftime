@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.track {
+  flex: 1;
+  height: 8px;
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  opacity: 0.5;
+}
+
+.fill {
+  height: 100%;
+  background-color: var(--color-accent-warm);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+  min-width: 0;
+}
+
+.text {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  white-space: nowrap;
+}

@@ -1,0 +1,59 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 42,
+      "steps": 30,
+      "cfg": 8.0,
+      "sampler_name": "dpmpp_3m_sde_gpu",
+      "scheduler": "karras",
+      "denoise": 1.0,
+      "model": ["4", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0]
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "vintage Chinese picture book illustration, Chinese nursing home, Chinese elderly care facility, Chinese elderly residents, warm old photo album texture, soft watercolor texture, subtle crayon linework, clean clear line art, high resolution, sharp details, crisp composition, low saturation warm colors, gentle natural light, simple and realistic elderly care environment, accessible design, handrails, non-slip floor, wheelchair accessible, calm and humane atmosphere, same facility style, no readable text, no logo, no watermark, 16:9 wide scene, suitable for full screen web game background, clear interactable objects, hotspot friendly composition",
+      "clip": ["4", 1]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "western elderly people, European nursing home, American nursing home, Japanese style, Korean style, private home, ordinary apartment, luxury bedroom, home living room, young person's room, anime, childish cartoon, cyberpunk, horror hospital, abandoned building, messy room, crowded composition, readable text, logo, watermark, blurry, low resolution, soft focus, distorted perspective, deformed hands, extra limbs, over saturated colors, noisy details, unclear objects, object cut off, important objects hidden, extreme close up, fisheye lens",
+      "clip": ["4", 1]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["3", 0],
+      "vae": ["4", 2]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["8", 0],
+      "filename_prefix": "elder_scene"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+:root {
+  /* === 复古绘本风配色 === */
+  --color-bg-primary:      #F5E6C8;   /* 暖黄纸张底色 */
+  --color-bg-secondary:    #EDE0CC;   /* 米白卡片背景 */
+  --color-bg-dark:         #3E2C1C;   /* 深棕（暗区域） */
+  --color-text-primary:    #2E1C0C;   /* 深棕文字（加黑，提升对比度） */
+  --color-text-secondary:  #503A2C;   /* 中棕次要文字（加深） */
+  --color-text-light:      #6B5344;   /* 浅棕辅助文字（大幅加深，原#9B8B7E可读性太差） */
+  --color-accent-warm:      #7B5A10;   /* 暖金强调色（加深） */
+  --color-accent-rose:      #A05048;   /* 暖玫瑰（加深） */
+  --color-border:          #B89A68;   /* 边框色（加深） */
+  --color-disabled:        #A89888;   /* 禁用/锁定色（加深，至少能看清文字） */
+  --color-success:         #6B8E4E;   /* 柔和绿 */
+  --color-warning:         #C49A3C;   /* 柔和橙 */
+  --color-danger:          #B5655A;   /* 柔和红 */
+
+  /* === 排版 === */
+  --base-font-size:        18px;
+  --font-family-body:      'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+  --font-family-title:     'ZCOOL KuaiLe', 'Ma Shan Zheng', 'KaiTi', 'STKaiti', cursive;
+  --line-height:           1.8;
+
+  /* === 间距 === */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-2xl: 60px;
+
+  /* === 圆角 === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* === 阴影 === */
+  --shadow-card:     0 2px 8px rgba(62, 44, 28, 0.12);
+  --shadow-hover:    0 4px 16px rgba(62, 44, 28, 0.2);
+  --shadow-paper:    0 1px 3px rgba(62, 44, 28, 0.1), inset 0 0 60px rgba(62, 44, 28, 0.05);
+  --shadow-inset:    inset 0 2px 4px rgba(62, 44, 28, 0.08);
+
+  /* === 动画时长 === */
+  --transition-fast:    0.2s ease;
+  --transition-normal:  0.3s ease;
+  --transition-slow:    0.6s ease;
+
+  /* === 拼图碎片尺寸 === */
+  --puzzle-piece-size:  100px;
+
+  /* === 按钮最小触控尺寸（适老化） === */
+  --touch-target-min:   48px;
+}
+
+/* === 字体三档 === */
+:root, [data-font-size="normal"] { --base-font-size: 18px; }
+[data-font-size="large"]         { --base-font-size: 22px; }
+[data-font-size="xlarge"]        { --base-font-size: 26px; }

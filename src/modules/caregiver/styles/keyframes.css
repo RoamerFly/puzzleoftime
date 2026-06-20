@@ -1,0 +1,143 @@
+/* ============================================================================
+ * 第二章动画关键帧 · keyframes.css
+ * 来源: animation_node_mapping.yaml (12 序列 css_implementation)
+ *
+ * 所有 @keyframes 统一定义于此，CSS Module 中通过 animation-name 引用。
+ * ============================================================================ */
+
+/* ── SEQ_2A: 手部台阶式颤抖（不是 smooth ease） ── */
+@keyframes hand-tremble {
+  0%, 100% { transform: translateX(0); }
+  33%      { transform: translateX(var(--disp-tremble-px)); }
+  66%      { transform: translateX(calc(var(--disp-tremble-px) * -1)); }
+}
+
+/* ── SEQ_2C: 手指呼吸式悬停 ── */
+@keyframes finger-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.02); }
+}
+
+/* ── SEQ_4A: 身体失衡摇摆 ── */
+@keyframes body-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(var(--disp-body-sway-deg)); }
+}
+
+/* ── SEQ_4B: 照片慢速拉近 ── */
+@keyframes photo-draw-in {
+  from { transform: scale(1); }
+  to   { transform: scale(var(--disp-photo-zoom)); }
+}
+
+/* ── SEQ_5B: 拇指摩挲循环（仅作用于 AUX_007 层） ── */
+@keyframes thumb-rub {
+  0%, 100% { transform: translateX(calc(var(--disp-thumb-rub-px) * -1)); }
+  50%      { transform: translateX(var(--disp-thumb-rub-px)); }
+}
+
+/* ── SEQ_5A: 手机屏幕柔光脉冲 ── */
+@keyframes phone-glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(196, 154, 60, 0.3); }
+  50%      { box-shadow: 0 0 16px rgba(196, 154, 60, 0.6); }
+}
+
+/* ── 线索卡浮现 ── */
+@keyframes clue-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── SEQ_3A: SVG 圆圈绘制 ── */
+@keyframes draw-circle {
+  from { stroke-dashoffset: var(--circle-length, 160); }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ── SEQ_TB2: 紧急脉冲 ── */
+@keyframes urgent-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(181, 101, 90, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(181, 101, 90, 0.45);
+  }
+}
+
+/* ── SEQ_2B: 三层协同消退 ── */
+@keyframes withdraw-fade {
+  from { opacity: 0.8; }
+  to   { opacity: 0.3; }
+}
+
+@keyframes shadow-advance {
+  from { opacity: 0.3; }
+  to   { opacity: 0.85; }
+}
+
+@keyframes withdraw-translate {
+  from { transform: translateY(0); }
+  to   { transform: translateY(var(--disp-withdraw-px)); }
+}
+
+/* ── 通用 ── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes scale-bounce-in {
+  0%   { transform: scale(0.9); opacity: 0; }
+  60%  { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── 拖拽卡片手持感 ── */
+@keyframes card-drag-pickup {
+  to {
+    transform: scale(0.9) rotate(var(--disp-card-drag-deg));
+    box-shadow: 0 8px 24px rgba(62, 44, 28, 0.18);
+  }
+}
+
+@keyframes card-drop-bounce {
+  0%   { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* ========================================================================
+ * P0-C: 观察递进三阶段 elder-pose 动画
+ *   flinch -> glance -> open
+ *   通过身体微动作传递老人状态变化
+ * ======================================================================== */
+
+/* P0-C Stage 1: flinch -- 被注意到时本能的微缩 */
+@keyframes elder-flinch {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.96); }
+  100% { transform: scale(0.98); }
+}
+
+/* P0-C Stage 2: glance -- 开始留意观察者 */
+@keyframes elder-glance {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(var(--disp-glance-px, -4px)); }
+  100% { transform: translateX(0); }
+}
+
+/* P0-C Stage 3: open -- 愿意让观察者靠近 */
+@keyframes elder-open {
+  0%   { transform: scale(0.98); opacity: 0.85; }
+  100% { transform: scale(1);    opacity: 1; }
+}

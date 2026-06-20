@@ -1,0 +1,148 @@
+/* === ActionBeatBubble 样式 === */
+
+/* ── 气泡定位容器 ── */
+.bubbleContainer {
+  position: absolute;
+  z-index: var(--z-act-overlay, 30);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 气泡本体 ── */
+.bubble {
+  position: relative;
+  background: rgba(255, 253, 245, 0.95);
+  border: 1px solid rgba(200, 188, 168, 0.6);
+  border-radius: 12px;
+  box-shadow:
+    0 6px 20px rgba(62, 44, 28, 0.15),
+    0 2px 4px rgba(62, 44, 28, 0.06);
+  overflow: hidden;
+  pointer-events: auto;
+  animation: bubbleFadeIn 0.4s var(--ease-gentle-reveal, ease-out) forwards;
+  max-width: 240px;
+  min-width: 160px;
+}
+
+@keyframes bubbleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── ACT 图容器 ── */
+.actContainer {
+  width: 100%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.actImg {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  user-select: none;
+  -webkit-user-drag: none;
+  object-fit: contain;
+}
+
+/* ── 线索文本区 ── */
+.clueSection {
+  padding: 10px 14px 14px;
+  text-align: center;
+  animation: clueSectionFadeIn 0.5s var(--ease-gentle-reveal, ease-out) forwards;
+}
+
+@keyframes clueSectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clueText {
+  font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
+  font-size: 0.85rem;
+  color: var(--color-text-primary, #4A3928);
+  line-height: 1.7;
+  margin: 0 0 10px 0;
+}
+
+.collectBtn {
+  padding: 6px 18px;
+  background: var(--color-accent-warm, #7B5A10);
+  color: #FFFDF5;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 38px;
+  letter-spacing: 0.03em;
+}
+
+.collectBtn:hover {
+  background: #5A4010;
+  transform: translateY(-1px);
+}
+
+/* ── 跳过动画按钮 ── */
+.skipBtn {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 5;
+  padding: 2px 8px;
+  background: rgba(255, 253, 245, 0.7);
+  border: 1px solid rgba(200, 188, 168, 0.3);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  color: var(--color-text-light, #8A7A6A);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.skipBtn:hover {
+  background: rgba(255, 253, 245, 0.95);
+  color: var(--color-text-primary, #4A3928);
+}
+
+/* ── 尾巴（气泡指向热区的小三角） ── */
+.bubbleTail {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 253, 245, 0.95);
+  border-left: 1px solid rgba(200, 188, 168, 0.6);
+  border-bottom: 1px solid rgba(200, 188, 168, 0.6);
+}
+
+/* 默认：气泡在热区上方，尾巴朝下 */
+.tailDown {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+/* 气泡在热区下方，尾巴朝上 */
+.tailUp {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(135deg);
+}

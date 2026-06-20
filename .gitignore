@@ -1,0 +1,122 @@
+# Logs
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies and build output
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Build and tool caches
+
+coverage/
+.vite/
+*.tsbuildinfo
+.eslintcache
+
+# Editor directories and files
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# EdgeOne
+
+.edgeone/
+
+# Environment files
+
+.env
+.env.*
+!.env.example
+
+# AI agent local state
+
+skills-lock.json
+.agents/
+.codebuddy/
+.workbuddy/
+.artifacts/
+
+# Temporary directories
+
+.tmp-*/
+tmp/
+
+# 单模块描述文档（不需要提交）
+
+elder.md
+pos.md
+pos_updated.md
+
+# 本地项目记忆文件
+
+.project-memory.md
+
+# 本地工作副本（嵌套仓库，不纳入主仓库版本控制）
+
+PuzzleofTime/
+
+# 个人参考文档目录（不参与版本控制）
+personal_elder/
+
+# 本地截图和审计产物
+*.png.bak
+.tmp-caregiver-audit/
+
+# Auto-generated artifacts (do not commit)
+src/modules/caregiver/assets/images/caregiver_assets/animation_rect_manifest.json
+src/modules/caregiver/assets/images/caregiver_assets.zip
+src/modules/caregiver/assets/images/caregiver_assets_fixed/
+
+caregiver-current-guess.png
+.tmp-caregiver-audit/
+
+# 过程文件和参考文档（不需要提交）
+
+/caregiver_assets/
+bibles/
+/Assets/
+years_puzzle_elder_assets_v5_rebuilt/
+bgm_pos.md
+bgm_prompt.md
+call_event.md
+elder.md
+elder_text.md
+pos.md
+pos_updated.md
+suggest_elder_new.md
+suggest_elder_v2.md
+suggest_text.md
+suggest_text_v2.md
+suggest_text_v3.md
+suggest_v6.3.md
+suggest_v6.4.md
+Chapter2_Design_Report.md
+MODULE_ISOLATION_REPORT.md
+COLLABORATION.md
+prompt-and-lyrics-example.txt
+
+# 文档目录：只提交 docs/screenshots/ 截图，其余过程文档不纳入版本控制
+docs/*
+!docs/screenshots/
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+.tef_dist/*
+  
