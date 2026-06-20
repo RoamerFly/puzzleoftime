@@ -18,11 +18,14 @@ export function createRouter() {
     element: <ChapterWrapper key={config.chapterId} config={config} />,
   }));
 
-  return createBrowserRouter([
-    { path: '/', element: <MainMenu /> },
-    { path: '/settings', element: <Settings /> },
-    ...chapterRoutes,
-    { path: '/epilogue', element: <Epilogue /> },
-    { path: '*', element: <Navigate to="/" replace /> },
-  ]);
+  return createBrowserRouter(
+    [
+      { path: '/', element: <MainMenu /> },
+      { path: '/settings', element: <Settings /> },
+      ...chapterRoutes,
+      { path: '/epilogue', element: <Epilogue /> },
+      { path: '*', element: <Navigate to="/" replace /> },
+    ],
+    { basename: '/puzzleoftime' }
+  );
 }
