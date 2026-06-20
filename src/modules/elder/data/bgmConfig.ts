@@ -108,9 +108,9 @@ export const BGM_PRIORITY = {
 export const BGM_VOLUME = {
   scene: 0.20,
   memory: 0.24,
-  phoneRinging: 0.24,
+  phoneRinging: 0.29,
   phoneAnswered: 0.24,
-  phoneMissed: 0.24,
+  phoneMissed: 0.27,
   crisis: 0.30,
   ending: 0.27,
   transition: 0.17,
@@ -347,7 +347,7 @@ export function getEventBgm(_state: ElderGameState, extra: {
     return {
       key: 'videoFail',
       priority: BGM_PRIORITY.phone + 1,
-      volume: 0.24,
+      volume: 0.28,
       loop: false,
       stopAfterSeconds: 6,
       fadeInMs: 200,
