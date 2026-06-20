@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useGame } from '../../core/GameContext';
 import {
   INDICATORS,
@@ -200,82 +201,338 @@ export function getNextActionText(
   }
 }
 
+/* ======== 状态快照（持久化用） ======== */
+
+/** 可序列化的 Manager 运行时快照 */
+interface ManagerSnapshot {
+  phase: ManagerPhase;
+  selectedChoiceIds: string[];
+  committedChoiceIds: string[];
+  remainingBudget: number;
+  indicators: Record<string, number>;
+  viewedInfoModules: InfoModule[];
+  currentTab: ComputerTab;
+  adjustmentRemaining: number;
+  reputationRisk: ReputationRisk;
+  currentWorkEventIndex: number;
+  familyCaller: FamilyCaller | null;
+  familyCallChoice: string | null;
+  familyCallOutcome: FamilyCallOutcome | null;
+  systemNotifications: string[];
+  bulletinNotes: string[];
+  isNightMode: boolean;
+  gameTimeMinutes: number;
+  phoneRecords: PhoneRecord[];
+  activeWorkEvents: Omit<WorkEvent, 'calcSeverity'>[];
+  workEventResults: WorkEventResult[];
+  hasBootedComputer: boolean;
+  hasEnteredComputerSystem: boolean;
+  pendingSecondAdjustment: boolean;
+  revokedIds: string[];
+  eventsGenerated: boolean;
+  familyCallerGenerated: boolean;
+  adjustmentUsed: number;
+  phoneRecordId: number;
+}
+
+/** 收集所有需要持久化的状态 */
+function buildManagerSnapshot(params: {
+  phase: ManagerPhase;
+  selectedChoices: string[];
+  committedChoiceIds: string[];
+  remainingBudget: number;
+  indicators: Record<string, number>;
+  viewedInfoModules: InfoModule[];
+  currentTab: ComputerTab;
+  adjustmentRemaining: number;
+  reputationRisk: ReputationRisk;
+  currentWorkEventIndex: number;
+  familyCaller: FamilyCaller | null;
+  familyCallChoice: string | null;
+  familyCallOutcome: FamilyCallOutcome | null;
+  systemNotifications: string[];
+  bulletinNotes: string[];
+  isNightMode: boolean;
+  gameTimeMinutesRef: React.MutableRefObject<number>;
+  phoneRecords: PhoneRecord[];
+  activeWorkEvents: WorkEvent[];
+  workEventResults: WorkEventResult[];
+  hasBootedComputer: boolean;
+  hasEnteredComputerSystem: boolean;
+  pendingSecondAdjustment: boolean;
+  revokedIds: string[];
+  eventsGeneratedRef: React.MutableRefObject<boolean>;
+  familyCallerGeneratedRef: React.MutableRefObject<boolean>;
+  adjustmentUsedRef: React.MutableRefObject<number>;
+  phoneRecordIdRef: React.MutableRefObject<number>;
+}): ManagerSnapshot {
+  // 序列化 WorkEvent 时剔除 calcSeverity（函数不可序列化）
+  const serializableEvents: Omit<WorkEvent, 'calcSeverity'>[] = params.activeWorkEvents.map(
+    ({ calcSeverity: _, ...rest }) => rest,
+  );
+  return {
+    phase: params.phase,
+    selectedChoiceIds: params.selectedChoices,
+    committedChoiceIds: params.committedChoiceIds,
+    remainingBudget: params.remainingBudget,
+    indicators: params.indicators,
+    viewedInfoModules: params.viewedInfoModules,
+    currentTab: params.currentTab,
+    adjustmentRemaining: params.adjustmentRemaining,
+    reputationRisk: params.reputationRisk,
+    currentWorkEventIndex: params.currentWorkEventIndex,
+    familyCaller: params.familyCaller,
+    familyCallChoice: params.familyCallChoice,
+    familyCallOutcome: params.familyCallOutcome,
+    systemNotifications: params.systemNotifications,
+    bulletinNotes: params.bulletinNotes,
+    isNightMode: params.isNightMode,
+    gameTimeMinutes: params.gameTimeMinutesRef.current,
+    phoneRecords: params.phoneRecords,
+    activeWorkEvents: serializableEvents,
+    workEventResults: params.workEventResults,
+    hasBootedComputer: params.hasBootedComputer,
+    hasEnteredComputerSystem: params.hasEnteredComputerSystem,
+    pendingSecondAdjustment: params.pendingSecondAdjustment,
+    revokedIds: params.revokedIds,
+    eventsGenerated: params.eventsGeneratedRef.current,
+    familyCallerGenerated: params.familyCallerGeneratedRef.current,
+    adjustmentUsed: params.adjustmentUsedRef.current,
+    phoneRecordId: params.phoneRecordIdRef.current,
+  };
+}
+
 /* ======== 主组件 ======== */
 export function ManagerScene({ onComplete, onNavigateNext, onNavigateMenu }: ChapterSceneProps) {
   void onNavigateNext;
   void onNavigateMenu;
 
-  const { dispatch } = useGame();
+  const { state: gameState, dispatch } = useGame();
+  const location = useLocation();
+  const isResume = (location.state as { resume?: boolean } | null)?.resume ?? false;
+
+  /* === 读取已保存快照（仅恢复时） === */
+  const savedSnapshot: ManagerSnapshot | undefined = isResume
+    ? (gameState.progress.chapters['manager'] as ManagerSnapshot | undefined)
+    : undefined;
 
   /* === 主阶段 === */
-  const [phase, setPhase] = useState<ManagerPhase>('office');
+  const [phase, setPhase] = useState<ManagerPhase>(
+    savedSnapshot?.phase ?? 'office',
+  );
 
   /* === 办公室交互 === */
   const [computerOpen, setComputerOpen] = useState(false);
   const [bulletinOpen, setBulletinOpen] = useState(false);
-  const [currentTab, setCurrentTab] = useState<ComputerTab>('todo');
-  const [hasBootedComputer, setHasBootedComputer] = useState(false);
-  const [hasEnteredComputerSystem, setHasEnteredComputerSystem] = useState(false);
+  const [currentTab, setCurrentTab] = useState<ComputerTab>(
+    savedSnapshot?.currentTab ?? 'todo',
+  );
+  const [hasBootedComputer, setHasBootedComputer] = useState(
+    savedSnapshot?.hasBootedComputer ?? false,
+  );
+  const [hasEnteredComputerSystem, setHasEnteredComputerSystem] = useState(
+    savedSnapshot?.hasEnteredComputerSystem ?? false,
+  );
 
   /* === 已查看信息模块 === */
-  const [viewedInfoModules, setViewedInfoModules] = useState<InfoModule[]>([]);
+  const [viewedInfoModules, setViewedInfoModules] = useState<InfoModule[]>(
+    savedSnapshot?.viewedInfoModules ?? [],
+  );
 
   /* === 预算/指标状态 === */
-  const [remainingBudget, setRemainingBudget] = useState(TOTAL_BUDGET);
-  const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
+  const [remainingBudget, setRemainingBudget] = useState(
+    savedSnapshot?.remainingBudget ?? TOTAL_BUDGET,
+  );
+  const [selectedChoices, setSelectedChoices] = useState<string[]>(
+    savedSnapshot?.selectedChoiceIds ?? [],
+  );
   const [indicators, setIndicators] = useState<Record<string, number>>(() => {
+    if (savedSnapshot?.indicators && Object.keys(savedSnapshot.indicators).length > 0) {
+      return savedSnapshot.indicators;
+    }
     const init: Record<string, number> = {};
     INDICATORS.forEach(ind => { init[ind.id] = ind.initialValue; });
     return init;
   });
 
   /* === 第一轮已承诺项 === */
-  const [committedChoiceIds, setCommittedChoiceIds] = useState<string[]>([]);
+  const [committedChoiceIds, setCommittedChoiceIds] = useState<string[]>(
+    savedSnapshot?.committedChoiceIds ?? [],
+  );
 
   /* === 第二轮调整 === */
-  const [adjustmentRemaining, setAdjustmentRemaining] = useState(4);
+  const [adjustmentRemaining, setAdjustmentRemaining] = useState(
+    savedSnapshot?.adjustmentRemaining ?? 4,
+  );
   /** 已使用的调整次数（用于历史报告） */
-  const adjustmentUsedRef = useRef(0);
-  const [reputationRisk, setReputationRisk] = useState<ReputationRisk>('low');
-  const [revokedIds, setRevokedIds] = useState<string[]>([]);
+  const adjustmentUsedRef = useRef(savedSnapshot?.adjustmentUsed ?? 0);
+  const [reputationRisk, setReputationRisk] = useState<ReputationRisk>(
+    savedSnapshot?.reputationRisk ?? 'low',
+  );
+  const [revokedIds, setRevokedIds] = useState<string[]>(
+    savedSnapshot?.revokedIds ?? [],
+  );
 
   /* === 工作突发事件 === */
-  const [activeWorkEvents, setActiveWorkEvents] = useState<WorkEvent[]>([]);
-  const [currentWorkEventIndex, setCurrentWorkEventIndex] = useState(0);
-  const [workEventResults, setWorkEventResults] = useState<WorkEventResult[]>([]);
-  const eventsGeneratedRef = useRef(false);
-  const familyCallerGeneratedRef = useRef(false);
+  const [activeWorkEvents, setActiveWorkEvents] = useState<WorkEvent[]>(
+    (savedSnapshot?.activeWorkEvents as WorkEvent[]) ?? [],
+  );
+  const [currentWorkEventIndex, setCurrentWorkEventIndex] = useState(
+    savedSnapshot?.currentWorkEventIndex ?? 0,
+  );
+  const [workEventResults, setWorkEventResults] = useState<WorkEventResult[]>(
+    savedSnapshot?.workEventResults ?? [],
+  );
+  const eventsGeneratedRef = useRef(savedSnapshot?.eventsGenerated ?? false);
+  const familyCallerGeneratedRef = useRef(savedSnapshot?.familyCallerGenerated ?? false);
 
   /* === 系统通知 & 公告板 === */
-  const [systemNotifications, setSystemNotifications] = useState<string[]>([]);
-  const [bulletinNotes, setBulletinNotes] = useState<string[]>([]);
+  const [systemNotifications, setSystemNotifications] = useState<string[]>(
+    savedSnapshot?.systemNotifications ?? [],
+  );
+  const [bulletinNotes, setBulletinNotes] = useState<string[]>(
+    savedSnapshot?.bulletinNotes ?? [],
+  );
 
   /* === 家庭来电 === */
-  const [familyCaller, setFamilyCaller] = useState<FamilyCaller | null>(null);
-  const [familyCallChoice, setFamilyCallChoice] = useState<string | null>(null);
+  const [familyCaller, setFamilyCaller] = useState<FamilyCaller | null>(
+    savedSnapshot?.familyCaller ?? null,
+  );
+  const [familyCallChoice, setFamilyCallChoice] = useState<string | null>(
+    savedSnapshot?.familyCallChoice ?? null,
+  );
   /** 家庭来电综合结果（更细粒度，用于最终独白） */
-  const [familyCallOutcome, setFamilyCallOutcome] = useState<FamilyCallOutcome | null>(null);
+  const [familyCallOutcome, setFamilyCallOutcome] = useState<FamilyCallOutcome | null>(
+    savedSnapshot?.familyCallOutcome ?? null,
+  );
 
   /* === 电话通话记录 === */
-  const [phoneRecords, setPhoneRecords] = useState<PhoneRecord[]>([]);
+  const [phoneRecords, setPhoneRecords] = useState<PhoneRecord[]>(
+    savedSnapshot?.phoneRecords ?? [],
+  );
   const [showPhoneRecord, setShowPhoneRecord] = useState(false);
-  const phoneRecordIdRef = useRef(0);
+  const phoneRecordIdRef = useRef(savedSnapshot?.phoneRecordId ?? 0);
 
   /* === 夜晚模式 === */
-  const [isNightMode, setIsNightMode] = useState(false);
+  const [isNightMode, setIsNightMode] = useState(
+    savedSnapshot?.isNightMode ?? false,
+  );
   /** 是否为最终夜晚收束暗场（nightEnding 阶段，更暗更沉重） */
   const [isNightEnding, setIsNightEnding] = useState(false);
   /** 家人电话后待处理临时调整（夜晚办公室电脑提示） */
-  const [pendingSecondAdjustment, setPendingSecondAdjustment] = useState(false);
+  const [pendingSecondAdjustment, setPendingSecondAdjustment] = useState(
+    savedSnapshot?.pendingSecondAdjustment ?? false,
+  );
   /** 家人电话后夜晚过渡提示是否可见 */
   const [showNightTransition, setShowNightTransition] = useState(false);
   /** 夜晚过渡提示自动关闭定时器 */
   const nightTransitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* === 游戏内时间系统 === */
-  const [gameTimeMinutes, setGameTimeMinutes] = useState(0); // 从09:00起算的游戏分钟数
+  const [gameTimeMinutes, setGameTimeMinutes] = useState(
+    savedSnapshot?.gameTimeMinutes ?? 0,
+  ); // 从09:00起算的游戏分钟数
   const [timeFrozen] = useState(false);
-  const gameTimeMinutesRef = useRef(0); // 避免闭包陈旧问题
+  const gameTimeMinutesRef = useRef(savedSnapshot?.gameTimeMinutes ?? 0); // 避免闭包陈旧问题
+
+  /* === 状态持久化同步 === */
+
+  /** 持有最新快照构建函数的 ref（供 unmount cleanup 使用） */
+  const snapshotRef = useRef<() => ManagerSnapshot>(() =>
+    buildManagerSnapshot({
+      phase,
+      selectedChoices,
+      committedChoiceIds,
+      remainingBudget,
+      indicators,
+      viewedInfoModules,
+      currentTab,
+      adjustmentRemaining,
+      reputationRisk,
+      currentWorkEventIndex,
+      familyCaller,
+      familyCallChoice,
+      familyCallOutcome,
+      systemNotifications,
+      bulletinNotes,
+      isNightMode,
+      gameTimeMinutesRef,
+      phoneRecords,
+      activeWorkEvents,
+      workEventResults,
+      hasBootedComputer,
+      hasEnteredComputerSystem,
+      pendingSecondAdjustment,
+      revokedIds,
+      eventsGeneratedRef,
+      familyCallerGeneratedRef,
+      adjustmentUsedRef,
+      phoneRecordIdRef,
+    }),
+  );
+
+  // 每轮 render 更新 snapshotRef 为最新闭包
+  snapshotRef.current = () =>
+    buildManagerSnapshot({
+      phase,
+      selectedChoices,
+      committedChoiceIds,
+      remainingBudget,
+      indicators,
+      viewedInfoModules,
+      currentTab,
+      adjustmentRemaining,
+      reputationRisk,
+      currentWorkEventIndex,
+      familyCaller,
+      familyCallChoice,
+      familyCallOutcome,
+      systemNotifications,
+      bulletinNotes,
+      isNightMode,
+      gameTimeMinutesRef,
+      phoneRecords,
+      activeWorkEvents,
+      workEventResults,
+      hasBootedComputer,
+      hasEnteredComputerSystem,
+      pendingSecondAdjustment,
+      revokedIds,
+      eventsGeneratedRef,
+      familyCallerGeneratedRef,
+      adjustmentUsedRef,
+      phoneRecordIdRef,
+    });
+
+  /** 判断当前是否有有意义的状态需要保存 */
+  const hasMeaningfulState =
+    phase !== 'office' || selectedChoices.length > 0 || hasBootedComputer;
+
+  // Phase 变更时同步状态到全局
+  useEffect(() => {
+    if (!hasMeaningfulState) return;
+    dispatch({
+      type: 'UPDATE_CHAPTER_STATE',
+      chapterId: 'manager',
+      payload: snapshotRef.current(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, selectedChoices.length, hasBootedComputer]);
+
+  // 组件卸载时保存最终状态（ref 持有最新闭包，无需 deps）
+  useEffect(() => {
+    return () => {
+      // 重新检查当前状态（ref 持有最新值）
+      // hasMeaningfulState 的判断依赖于闭包，这里直接保存快照
+      // 如果phase为office且无操作，快照不影响MainMenu展示
+      dispatch({
+        type: 'UPDATE_CHAPTER_STATE',
+        chapterId: 'manager',
+        payload: snapshotRef.current(),
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const gameTimeDisplayText = useMemo(() => formatGameTimeText(gameTimeMinutes), [gameTimeMinutes]);
   const timePhase = useMemo(() => getTimePhase(gameTimeMinutes), [gameTimeMinutes]);
@@ -1301,7 +1558,7 @@ export function ManagerScene({ onComplete, onNavigateNext, onNavigateMenu }: Cha
     dispatch({
       type: 'UPDATE_CHAPTER_STATE',
       chapterId: 'manager',
-      payload: { historyReport: report },
+      payload: { ...snapshotRef.current(), historyReport: report, phase: 'nightEnding' as ManagerPhase },
     });
 
     setIsNightEnding(true);

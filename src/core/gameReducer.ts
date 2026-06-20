@@ -54,14 +54,78 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case 'UPDATE_CHAPTER_STATE':
+    case 'START_PLAYTHROUGH': {
+      const entry = {
+        id: `${action.chapterId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        chapterId: action.chapterId,
+        status: 'in-progress' as const,
+        startedAt: new Date().toISOString(),
+        state: undefined,
+      };
       return {
         ...state,
         progress: {
           ...state.progress,
-          chapters: { ...state.progress.chapters, [action.chapterId]: action.payload },
+          playHistory: [...state.progress.playHistory, entry],
         },
       };
+    }
+
+    case 'COMPLETE_PLAYTHROUGH': {
+      // 找到该章节最新的 in-progress 条目，标记为 completed
+      const idx = state.progress.playHistory.reduce(
+        (best, e, i) =>
+          e.chapterId === action.chapterId && e.status === 'in-progress' ? i : best,
+        -1,
+      );
+      if (idx < 0) return state;
+      const chapterState = state.progress.chapters[action.chapterId];
+      return {
+        ...state,
+        progress: {
+          ...state.progress,
+          playHistory: state.progress.playHistory.map((e, i) =>
+            i === idx
+              ? { ...e, status: 'completed' as const, completedAt: new Date().toISOString(), state: chapterState ?? e.state }
+              : e,
+          ),
+        },
+      };
+    }
+
+    case 'DELETE_PLAYTHROUGH': {
+      return {
+        ...state,
+        progress: {
+          ...state.progress,
+          playHistory: state.progress.playHistory.filter(e => e.id !== action.id),
+        },
+      };
+    }
+
+    case 'UPDATE_CHAPTER_STATE': {
+      const newChapters = { ...state.progress.chapters, [action.chapterId]: action.payload };
+      // 自动同步到最新 in-progress playHistory 条目
+      const latestIdx = state.progress.playHistory.reduce(
+        (best, e, i) =>
+          e.chapterId === action.chapterId && e.status === 'in-progress' ? i : best,
+        -1,
+      );
+      const syncedHistory =
+        latestIdx >= 0
+          ? state.progress.playHistory.map((e, i) =>
+              i === latestIdx ? { ...e, state: action.payload } : e,
+            )
+          : state.progress.playHistory;
+      return {
+        ...state,
+        progress: {
+          ...state.progress,
+          chapters: newChapters,
+          playHistory: syncedHistory,
+        },
+      };
+    }
 
     case 'START_NARRATIVE':
       return {

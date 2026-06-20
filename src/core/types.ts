@@ -13,12 +13,23 @@ export interface SettingsState {
  * 全局进度状态
  * - currentChapter: 当前正在进行的模块ID（如 'elder'），空字符串表示未开始
  * - completedChapters: 已完成的模块ID列表
- * - chapters: 各模块私有状态，按模块ID索引
+ * - chapters: 当前活跃章节的实时状态（与最新 playHistory 条目同步）
+ * - playHistory: 所有游玩记录（栈模型：开新游戏入栈 → 进行中 → 完成时标记）
  */
+export interface PlayHistoryEntry {
+  id: string;
+  chapterId: string;
+  status: 'in-progress' | 'completed';
+  startedAt: string;     // ISO datetime，开新游戏时设置
+  completedAt?: string;  // ISO datetime，完成时设置
+  state: unknown;        // 章节状态快照
+}
+
 export interface ProgressState {
   currentChapter: string;
   completedChapters: string[];
   chapters: Record<string, unknown>;
+  playHistory: PlayHistoryEntry[];
   gameCompleted: boolean;
 }
 
@@ -41,6 +52,9 @@ export type GameAction =
   | { type: 'SET_SFX_VOLUME'; volume: number }
   | { type: 'START_CHAPTER'; chapterId: string }
   | { type: 'COMPLETE_CHAPTER'; chapterId: string }
+  | { type: 'START_PLAYTHROUGH'; chapterId: string }
+  | { type: 'COMPLETE_PLAYTHROUGH'; chapterId: string }
+  | { type: 'DELETE_PLAYTHROUGH'; id: string }
   | { type: 'UPDATE_CHAPTER_STATE'; chapterId: string; payload: unknown }
   | { type: 'START_NARRATIVE' }
   | { type: 'ADVANCE_NARRATIVE' }
@@ -60,6 +74,7 @@ export const INITIAL_PROGRESS: ProgressState = {
   currentChapter: '',
   completedChapters: [],
   chapters: {},
+  playHistory: [],
   gameCompleted: false,
 };
 
@@ -112,6 +127,20 @@ export function migrateLegacyState(saved: Record<string, unknown>): Record<strin
     delete progress.chapter1;
     delete progress.chapter2;
     delete progress.chapter3;
+  }
+
+  // 迁移旧 playHistory 条目（无 status 字段 → 补全为 completed）
+  if (Array.isArray(progress.playHistory)) {
+    progress.playHistory = (progress.playHistory as Record<string, unknown>[]).map(entry => {
+      if (!entry.status) {
+        return {
+          ...entry,
+          status: 'completed',
+          startedAt: entry.completedAt ?? new Date().toISOString(),
+        };
+      }
+      return entry;
+    });
   }
 
   return saved;

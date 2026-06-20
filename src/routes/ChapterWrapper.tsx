@@ -35,7 +35,7 @@ interface ChapterWrapperProps {
 export function ChapterWrapper({ config }: ChapterWrapperProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { completeChapter, startChapter, setFontSize, state } = useGame();
+  const { completeChapter, startChapter, setFontSize, state, dispatch } = useGame();
 
   // 恢复进度：从 location state 中读取
   const isResuming = !!(location.state as { resume?: boolean } | null)?.resume;
@@ -82,6 +82,7 @@ export function ChapterWrapper({ config }: ChapterWrapperProps) {
 
   // 点击"继续前行"
   const handleComplete = useCallback(() => {
+    dispatch({ type: 'COMPLETE_PLAYTHROUGH', chapterId: config.chapterId });
     completeChapter(config.chapterId);
     const next = getNextChapter(config.chapterId);
     if (next) {
@@ -90,7 +91,7 @@ export function ChapterWrapper({ config }: ChapterWrapperProps) {
     } else {
       navigate('/epilogue');
     }
-  }, [config.chapterId, completeChapter, startChapter, navigate]);
+  }, [config.chapterId, completeChapter, startChapter, navigate, dispatch]);
 
   // 返回主菜单（暂停菜单中）
   const handleBackToMenu = useCallback(() => {
@@ -100,15 +101,17 @@ export function ChapterWrapper({ config }: ChapterWrapperProps) {
 
   // 完成弹窗 - 返回主菜单（先进入终章）
   const handleBackToMenuFromComplete = useCallback(() => {
+    dispatch({ type: 'COMPLETE_PLAYTHROUGH', chapterId: config.chapterId });
     completeChapter(config.chapterId);
     navigate('/epilogue');
-  }, [config.chapterId, completeChapter, navigate]);
+  }, [config.chapterId, completeChapter, navigate, dispatch]);
 
   // 进入终章
   const handleEpilogue = useCallback(() => {
+    dispatch({ type: 'COMPLETE_PLAYTHROUGH', chapterId: config.chapterId });
     completeChapter(config.chapterId);
     navigate('/epilogue');
-  }, [config.chapterId, completeChapter, navigate]);
+  }, [config.chapterId, completeChapter, navigate, dispatch]);
 
   return (
     <GameLayout chapterOrder={config.order} totalChapters={getTotalChapters()} showProgress={false}>

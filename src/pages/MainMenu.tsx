@@ -53,7 +53,7 @@ function extractChapterSummary(chapterId: string, chapterState: unknown): string
 
 export function MainMenu() {
   const navigate = useNavigate();
-  const { startChapter, state } = useGame();
+  const { startChapter, state, dispatch } = useGame();
   const allChapters = getAllChapters();
 
   // 模态框状态
@@ -63,35 +63,46 @@ export function MainMenu() {
   // 历史面板状态
   const [showHistory, setShowHistory] = useState(false);
   // 报告弹窗
-  const [reportChapter, setReportChapter] = useState<ChapterConfig | null>(null);
+  const [reportEntry, setReportEntry] = useState<{
+    config: ChapterConfig;
+    chapterState: unknown;
+    completedAt?: string;
+  } | null>(null);
 
-  // 历史记录（已完成 + 进行中）
+  // 历史记录 — 全部来自 playHistory（栈模型：进行中 + 已完成）
   const historyEntries = useMemo(() => {
     const entries: {
+      id: string;
       config: ChapterConfig;
       summary: string;
       status: 'completed' | 'in-progress';
+      startedAt: string;
+      completedAt?: string;
+      chapterState: unknown;
     }[] = [];
 
-    // 已完成
-    for (const id of state.progress.completedChapters) {
-      const config = allChapters.find(c => c.chapterId === id);
+    for (const entry of state.progress.playHistory) {
+      const config = allChapters.find(c => c.chapterId === entry.chapterId);
       if (!config) continue;
-      const chapterState = state.progress.chapters[id];
-      entries.push({ config, summary: extractChapterSummary(id, chapterState), status: 'completed' });
+      entries.push({
+        id: entry.id,
+        config,
+        summary: extractChapterSummary(entry.chapterId, entry.state),
+        status: entry.status,
+        startedAt: entry.startedAt,
+        completedAt: entry.completedAt,
+        chapterState: entry.state,
+      });
     }
 
-    // 进行中（有保存状态但未完成）
-    for (const id of Object.keys(state.progress.chapters)) {
-      if (state.progress.completedChapters.includes(id)) continue;
-      const config = allChapters.find(c => c.chapterId === id);
-      if (!config) continue;
-      const chapterState = state.progress.chapters[id];
-      entries.push({ config, summary: extractChapterSummary(id, chapterState), status: 'in-progress' });
-    }
-
-    return entries;
-  }, [state.progress.completedChapters, state.progress.chapters, allChapters]);
+    // 排序：进行中在前，已完成按完成时间倒序，进行中按开始时间倒序
+    return entries.sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'in-progress' ? -1 : 1;
+      const timeA = a.status === 'completed' ? (a.completedAt ?? '') : a.startedAt;
+      const timeB = b.status === 'completed' ? (b.completedAt ?? '') : b.startedAt;
+      return timeB.localeCompare(timeA);
+    });
+  }, [state.progress.playHistory, allChapters]);
 
   // 恢复进度
   const handleResume = (chapterId: string) => {
@@ -100,8 +111,13 @@ export function MainMenu() {
   };
 
   // 查看报告
-  const handleViewReport = (chapter: ChapterConfig) => {
-    setReportChapter(chapter);
+  const handleViewReport = (entry: { config: ChapterConfig; chapterState: unknown; completedAt?: string }) => {
+    setReportEntry(entry);
+  };
+
+  // 删除记录
+  const handleDelete = (id: string) => {
+    dispatch({ type: 'DELETE_PLAYTHROUGH', id });
   };
 
   // 打开角色选择
@@ -120,11 +136,15 @@ export function MainMenu() {
     setSelectedRole(null);
   };
 
-  // 确认开始游戏
+  // 确认开始游戏 — 入栈新记录 + 清除工作状态
   const handleConfirmRole = () => {
     if (!selectedRole) return;
     setShowRoleSelect(false);
     setSelectedRole(null);
+    // 入栈：创建新的进行中记录
+    dispatch({ type: 'START_PLAYTHROUGH', chapterId: selectedRole.chapterId });
+    // 清除旧的工作状态，确保章节从初始开始
+    dispatch({ type: 'UPDATE_CHAPTER_STATE', chapterId: selectedRole.chapterId, payload: undefined as unknown });
     startChapter(selectedRole.chapterId);
     navigate(`/chapter/${selectedRole.chapterId}`);
   };
@@ -163,16 +183,38 @@ export function MainMenu() {
               <p className={styles.historyEmpty}>暂无体验记录</p>
             ) : (
               <div className={styles.historyList}>
-                {historyEntries.map(({ config, summary, status }) => (
-                  <div key={config.chapterId} className={styles.historyItem}>
+                {historyEntries.map(({ id, config, summary, status, startedAt, completedAt, chapterState }) => (
+                  <div key={id} className={styles.historyItem}>
                     <span className={styles.historyIcon}>{config.icon}</span>
                     <div className={styles.historyInfo}>
                       <div className={styles.historyHeader}>
                         <span className={styles.historyName}>{config.title}</span>
-                        <span className={`${styles.historyStatus} ${status === 'in-progress' ? styles.historyStatusActive : ''}`}>
-                          {status === 'completed' ? '✓' : '●'}
-                        </span>
+                        <div className={styles.historyHeaderRight}>
+                          <span className={`${styles.historyStatus} ${status === 'in-progress' ? styles.historyStatusActive : ''}`}>
+                            {status === 'completed' ? '✓' : '●'}
+                          </span>
+                          <button
+                            className={styles.historyDelete}
+                            onClick={(e) => { e.stopPropagation(); handleDelete(id); }}
+                            title="删除记录"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
+                      <span className={styles.historyTime}>
+                        {status === 'completed' && completedAt
+                          ? new Date(completedAt).toLocaleString('zh-CN', {
+                              month: 'numeric', day: 'numeric',
+                              hour: '2-digit', minute: '2-digit',
+                            })
+                          : status === 'in-progress'
+                            ? `开始于 ${new Date(startedAt).toLocaleString('zh-CN', {
+                                month: 'numeric', day: 'numeric',
+                                hour: '2-digit', minute: '2-digit',
+                              })}`
+                            : ''}
+                      </span>
                       {summary && (
                         <span className={styles.historySummary}>{summary}</span>
                       )}
@@ -187,7 +229,7 @@ export function MainMenu() {
                       {status === 'completed' && (
                         <button
                           className={styles.historyReport}
-                          onClick={() => handleViewReport(config)}
+                          onClick={() => handleViewReport({ config, chapterState, completedAt })}
                         >
                           查看报告
                         </button>
@@ -286,19 +328,27 @@ export function MainMenu() {
         </Dialog>
 
         {/* ── 查看报告弹窗 ── */}
-        <Dialog visible={!!reportChapter} onClose={() => setReportChapter(null)}>
-          {reportChapter && (
+        <Dialog visible={!!reportEntry} onClose={() => setReportEntry(null)}>
+          {reportEntry && (
             <div className={`${styles.modal} ${styles.reportModal}`}>
               <h2 className={styles.modalTitle}>
-                {reportChapter.icon} {reportChapter.title}
+                {reportEntry.config.icon} {reportEntry.config.title}
+                {reportEntry.completedAt && (
+                  <span style={{ fontSize: '0.7em', opacity: 0.6, marginLeft: '0.5em' }}>
+                    {new Date(reportEntry.completedAt).toLocaleString('zh-CN', {
+                      month: 'numeric', day: 'numeric',
+                      hour: '2-digit', minute: '2-digit',
+                    })}
+                  </span>
+                )}
               </h2>
               <div className={styles.reportContent}>
                 <ReportBody
-                  chapterId={reportChapter.chapterId}
-                  chapterState={state.progress.chapters[reportChapter.chapterId]}
+                  chapterId={reportEntry.config.chapterId}
+                  chapterState={reportEntry.chapterState}
                 />
               </div>
-              <button className={styles.modalClose} onClick={() => setReportChapter(null)}>✕</button>
+              <button className={styles.modalClose} onClick={() => setReportEntry(null)}>✕</button>
             </div>
           )}
         </Dialog>

@@ -12,6 +12,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { ChapterSceneProps } from '../../core/chapterRegistry';
 import { useChapterState } from '../../core/hooks/useChapterState';
 import type { CaregiverState, EventResult } from './data/caregiverState';
@@ -45,12 +46,25 @@ import type { CaregiverSceneId } from './data/caregiverBgmConfig';
 
 export function CaregiverScene({ onComplete }: ChapterSceneProps) {
   // ============================================================
-  // 持久化状态 —— 始终从 localStorage 恢复，仅「重新体验」按钮重置
+  // 持久化状态 —— resume 时从 localStorage 恢复，新开游戏则重置
   // ============================================================
   const { state: rawState, updateState } = useChapterState<CaregiverState>(
     'caregiver',
     CAREGIVER_INITIAL_STATE,
   );
+
+  const location = useLocation();
+  const isResume = (location.state as { resume?: boolean } | null)?.resume ?? false;
+
+  // 新开游戏时重置为初始状态（仅执行一次）
+  const resetDoneRef = useRef(false);
+  useEffect(() => {
+    if (resetDoneRef.current) return;
+    resetDoneRef.current = true;
+    if (!isResume) {
+      updateState(CAREGIVER_INITIAL_STATE);
+    }
+  }, [isResume, updateState]);
 
   const state = useMemo(
     () => normalizeCaregiverState(rawState),

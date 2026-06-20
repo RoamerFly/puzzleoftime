@@ -1469,15 +1469,17 @@ export function ElderScene({ onComplete, onNavigateMenu, isPaused, initialState 
 
   /** ===== 结算后：重新体验前先标记完成 ===== */
   const handleEndingRestart = useCallback(() => {
+    dispatch({ type: 'COMPLETE_PLAYTHROUGH', chapterId: 'elder' });
     completeChapter('elder');
     handleRestart();
-  }, [completeChapter, handleRestart]);
+  }, [completeChapter, dispatch, handleRestart]);
 
   /** ===== 结算后：返回主菜单前先标记完成 ===== */
   const handleEndingBackToMenu = useCallback(() => {
+    dispatch({ type: 'COMPLETE_PLAYTHROUGH', chapterId: 'elder' });
     completeChapter('elder');
     onNavigateMenu();
-  }, [completeChapter, onNavigateMenu]);
+  }, [completeChapter, dispatch, onNavigateMenu]);
 
   // ── 错过饭点检测（顶部通知，不阻塞操作） ──
   useEffect(() => {
